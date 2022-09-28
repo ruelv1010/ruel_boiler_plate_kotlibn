@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Android Boilerplate</string>
+
+    <string name="commons_error_title">We hit a bump</string>
+    <string name="commons_error_message">Something went wrong.Please try again.</string>
+    <string name="common_network_msg">Unstable internet connection. Please try again later.</string>
+    <string name="common_something_went_wrong_msg">Something went wrong. Please try again later.</string>
+
+</resources>
