@@ -1,4 +1,4 @@
-package com.android.base
+package com.android.boilerplate.base
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp

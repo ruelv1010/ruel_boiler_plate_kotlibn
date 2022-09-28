@@ -2,7 +2,7 @@ package com.android.boilerplate.utils
 
 import android.annotation.SuppressLint
 import android.util.Log
-import com.android.base.CommonsLib
+import com.android.boilerplate.base.CommonsLib
 import com.android.boilerplate.BuildConfig
 
 
