@@ -5,5 +5,10 @@
     <string name="commons_error_message">Something went wrong.Please try again.</string>
     <string name="common_network_msg">Unstable internet connection. Please try again later.</string>
     <string name="common_something_went_wrong_msg">Something went wrong. Please try again later.</string>
+    <string name="login_email_hint">Username or Email</string>
+    <string name="login_password_hint">Password</string>
+    <string name="login_txt">Login</string>
+    <string name="menu_home_title">Home</string>
+    <string name="menu_articles_title">Articles</string>
 
 </resources>
