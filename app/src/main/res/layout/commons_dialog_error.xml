@@ -37,6 +37,7 @@
             android:maxWidth="@dimen/dimen_180"
             android:text="@string/commons_error_message"
             android:textColor="@color/commons_text_hint"
+            android:fontFamily="@font/fira_sans_regular"
             android:textSize="@dimen/font_14" />
 
     </LinearLayout>
