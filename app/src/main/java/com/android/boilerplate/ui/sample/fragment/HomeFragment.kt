@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.android.boilerplate.databinding.FragmentHomeBinding
+import com.android.boilerplate.utils.dialog.WebviewDialog
+import com.android.boilerplate.utils.setOnSingleClickListener
 
 class HomeFragment: Fragment() {
     private var _binding: FragmentHomeBinding? = null
@@ -26,8 +28,21 @@ class HomeFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setClickListeners()
     }
 
+    private fun setClickListeners() = binding.run {
+        loadWebViewDialogButton.setOnSingleClickListener {
+            openWebViewDialog()
+        }
+    }
+
+    private fun openWebViewDialog(){
+        WebviewDialog.openDialog(
+            childFragmentManager,
+            "https://www.pmti.biz/"
+        )
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()
