@@ -4,6 +4,7 @@
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
     android:padding="@dimen/dimen_8"
+    android:id="@+id/articleLinearLayout"
     android:orientation="horizontal">
 
     <ImageView
@@ -19,21 +20,23 @@
         android:orientation="vertical">
 
         <TextView
+            android:id="@+id/titleTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:singleLine="true"
             tools:text="Title"
-            android:textSize="@dimen/dimen_16"
+            android:textSize="@dimen/font_16"
             android:ellipsize="end"
             android:fontFamily="@font/fira_sans_medium"/>
 
         <TextView
+            android:id="@+id/descTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:maxLines="3"
             android:text="@string/sample_lorem_ipsum"
             android:ellipsize="end"
-            android:textSize="@dimen/dimen_12"
+            android:textSize="@dimen/font_12"
             android:fontFamily="@font/fira_sans_regular"/>
 
     </LinearLayout>

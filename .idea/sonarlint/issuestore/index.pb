@@ -28,8 +28,6 @@ l
 <app/src/test/java/com/android/boilerplate/ExampleUnitTest.kt,f/e/fe1fe8cb837c99b06c6d15c1a71be8b5a4b4db43
 q
 Aapp/src/main/java/com/android/boilerplate/utils/FilePathHelper.kt,c/1/c114a799f13341d43c61b801d5fb392867c51bb5
-r
-Bapp/src/main/java/com/android/boilerplate/utils/ImageExtensions.kt,b/4/b40b27aa119fe95d42b140b6d2b478524c17a6df
 m
 =app/src/main/java/com/android/boilerplate/utils/ImageUtils.kt,4/c/4cb070bca880659090329e7aac16d6e1d195d05c
 t
