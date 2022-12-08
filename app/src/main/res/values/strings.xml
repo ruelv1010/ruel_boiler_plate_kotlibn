@@ -17,5 +17,6 @@
     <string name="logout_desc_lbl">Continue signing out?</string>
     <string name="logout_btn">Logout</string>
     <string name="logout_cancel_btn">Cancel</string>
+    <string name="login_loading">Logging in...</string>
 
 </resources>

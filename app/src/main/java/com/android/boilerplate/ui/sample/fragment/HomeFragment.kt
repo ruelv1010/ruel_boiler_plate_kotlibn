@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.android.boilerplate.data.repositories.auth.request.LoginRequest
+import com.android.boilerplate.data.repositories.auth.response.LoginResponse
 import com.android.boilerplate.databinding.FragmentHomeBinding
 import com.android.boilerplate.utils.dialog.WebviewDialog
 import com.android.boilerplate.utils.setOnSingleClickListener
