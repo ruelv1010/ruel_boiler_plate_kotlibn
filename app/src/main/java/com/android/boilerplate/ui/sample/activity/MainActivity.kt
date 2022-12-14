@@ -12,7 +12,9 @@ import com.android.boilerplate.R
 import com.android.boilerplate.databinding.ActivityMainBinding
 import com.android.boilerplate.utils.setOnSingleClickListener
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding

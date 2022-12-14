@@ -18,5 +18,6 @@
     <string name="logout_btn">Logout</string>
     <string name="logout_cancel_btn">Cancel</string>
     <string name="login_loading">Logging in...</string>
+    <string name="create_article_loading">Creating Article...</string>
 
 </resources>

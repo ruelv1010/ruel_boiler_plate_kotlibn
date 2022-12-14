@@ -6,17 +6,31 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.android.boilerplate.R
 import com.android.boilerplate.data.model.ArticleModel
+import com.android.boilerplate.data.repositories.article.response.ArticleData
 import com.android.boilerplate.databinding.FragmentArticleBinding
+import com.android.boilerplate.ui.article.activity.CreateArticleActivity
+import com.android.boilerplate.ui.article.viewmodel.ArticleListViewModel
+import com.android.boilerplate.ui.article.viewmodel.ArticleListViewState
 import com.android.boilerplate.ui.sample.adapter.ArticleAdapter
+import com.android.boilerplate.utils.EndlessRecyclerScrollListener
+import com.android.boilerplate.utils.setOnSingleClickListener
+import com.android.boilerplate.utils.showPopupError
+import dagger.hilt.android.AndroidEntryPoint
 
-class ArticleFragment: Fragment(), ArticleAdapter.ArticleCallback {
+@AndroidEntryPoint
+class ArticleFragment: Fragment(), ArticleAdapter.ArticleCallback, SwipeRefreshLayout.OnRefreshListener {
     private var _binding: FragmentArticleBinding? = null
     private val binding get() = _binding!!
     private var linearLayoutManager: LinearLayoutManager? = null
     private var articleAdapter: ArticleAdapter? = null
+    private val viewModel: ArticleListViewModel by viewModels()
+    private var scrollListener: EndlessRecyclerScrollListener? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,29 +47,67 @@ class ArticleFragment: Fragment(), ArticleAdapter.ArticleCallback {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        observeArticleList()
         setupArticleList()
+        setupClickListeners()
+        viewModel.getArticleList(true)
     }
 
-
     private fun setupArticleList() = binding.run {
-        articleAdapter =
-            ArticleAdapter(requireActivity(), this@ArticleFragment)
+        binding.swipeRefreshLayout.setOnRefreshListener(this@ArticleFragment)
+        articleAdapter = ArticleAdapter(requireActivity(), this@ArticleFragment)
         linearLayoutManager = LinearLayoutManager(context)
         articleRecyclerView.layoutManager = linearLayoutManager
         articleRecyclerView.adapter = articleAdapter
+        setupScrollListener()
+    }
 
-        val articleList = listOf(
-            ArticleModel("Title 1", getString(R.string.sample_lorem_ipsum), "https://images.pexels.com/photos/4155255/pexels-photo-4155255.jpeg?cs=srgb&dl=pexels-lumn-4155255.jpg&fm=jpg"),
-            ArticleModel("Title 2", getString(R.string.sample_lorem_ipsum), "https://images.pexels.com/photos/15286/pexels-photo.jpg?cs=srgb&dl=pexels-luis-del-r%C3%ADo-15286.jpg&fm=jpg"),
-            ArticleModel("Title 3", getString(R.string.sample_lorem_ipsum), "https://images.pexels.com/photos/2775196/pexels-photo-2775196.jpeg?cs=srgb&dl=pexels-roberto-nickson-2775196.jpg&fm=jpg"),
-            ArticleModel("Title 4", getString(R.string.sample_lorem_ipsum), "https://images.pexels.com/photos/34107/milky-way-stars-night-sky.jpg?cs=srgb&dl=pexels-pixabay-34107.jpg&fm=jpg"),
-            ArticleModel("Title 5", getString(R.string.sample_lorem_ipsum), "https://images.pexels.com/photos/4155255/pexels-photo-4155255.jpeg?cs=srgb&dl=pexels-lumn-4155255.jpg&fm=jpg"),
-            ArticleModel("Title 6", getString(R.string.sample_lorem_ipsum), "https://images.pexels.com/photos/15286/pexels-photo.jpg?cs=srgb&dl=pexels-luis-del-r%C3%ADo-15286.jpg&fm=jpg"),
-            ArticleModel("Title 7", getString(R.string.sample_lorem_ipsum), "https://images.pexels.com/photos/2775196/pexels-photo-2775196.jpeg?cs=srgb&dl=pexels-roberto-nickson-2775196.jpg&fm=jpg"),
-            ArticleModel("Title 8", getString(R.string.sample_lorem_ipsum), "https://images.pexels.com/photos/34107/milky-way-stars-night-sky.jpg?cs=srgb&dl=pexels-pixabay-34107.jpg&fm=jpg")
+    private fun setupScrollListener() {
+        linearLayoutManager?.let {
+            scrollListener = object : EndlessRecyclerScrollListener(it) {
+                override fun onLoadMore(page: Int, totalItemsCount: Int) {
+                    viewModel.getArticleList(false)
+                }
+            }
+        }
+        scrollListener?.let {
+            it.visibleThreshold = 3
+            binding.articleRecyclerView.addOnScrollListener(it)
+        }
+    }
 
-        )
-        articleAdapter?.appendData(articleList)
+    private fun observeArticleList() {
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.articleSharedFlow.collect { viewState ->
+                handleViewState(viewState)
+            }
+        }
+    }
+
+    private fun handleViewState(viewState: ArticleListViewState) {
+        when (viewState) {
+            is ArticleListViewState.Loading -> Unit
+            is ArticleListViewState.Success -> {
+                binding.swipeRefreshLayout.isRefreshing =false
+                if(viewModel.isFirstPage()){
+                    articleAdapter?.clear()
+                    articleAdapter?.appendData(viewState.articleListResponse?.data.orEmpty())
+                }else{
+                    articleAdapter?.appendData(viewState.articleListResponse?.data.orEmpty())
+                }
+            }
+            is ArticleListViewState.PopupError -> {
+                showPopupError(requireActivity(), childFragmentManager, viewState.errorCode, viewState.message)
+            }
+        }
+    }
+
+
+    private fun setupClickListeners() = binding.run {
+        createArticleButton.setOnSingleClickListener {
+            val intent = CreateArticleActivity.getIntent(requireActivity())
+            startActivity(intent)
+        }
     }
 
     override fun onDestroyView() {
@@ -63,7 +115,11 @@ class ArticleFragment: Fragment(), ArticleAdapter.ArticleCallback {
         _binding = null
     }
 
-    override fun onItemClicked(data: ArticleModel) {
-        Toast.makeText(requireActivity(), "Article ${data.title} is clicked.", Toast.LENGTH_LONG).show()
+    override fun onItemClicked(data: ArticleData) {
+        Toast.makeText(requireActivity(), "Article ${data.name} is clicked.", Toast.LENGTH_LONG).show()
+    }
+
+    override fun onRefresh() {
+        viewModel.getArticleList(true)
     }
 }

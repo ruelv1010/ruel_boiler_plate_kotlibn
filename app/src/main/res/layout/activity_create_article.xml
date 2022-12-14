@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/dimen_2"
+        android:elevation="@dimen/dimen_2">
+
+        <TextView
+            android:id="@+id/toolbarTitleTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="@font/fira_sans_bold"
+            android:text="Create Article"
+            android:textSize="@dimen/font_18" />
+
+    </androidx.appcompat.widget.Toolbar>
+
+
+    <ImageView
+        android:id="@+id/articleImageView"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen_200"
+        android:src="@mipmap/ic_launcher"/>
+
+    <EditText
+        android:id="@+id/titleEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Title"
+        android:inputType="text"
+        android:paddingStart="@dimen/dimen_16"
+        android:paddingEnd="@dimen/dimen_16"
+        android:fontFamily="@font/fira_sans_regular"
+        android:layout_marginTop="@dimen/dimen_50"/>
+
+    <EditText
+        android:id="@+id/descEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Description"
+        android:inputType="text"
+        android:paddingStart="@dimen/dimen_16"
+        android:paddingEnd="@dimen/dimen_16"
+        android:fontFamily="@font/fira_sans_regular"
+        android:maxLines="5"
+        android:layout_marginTop="@dimen/dimen_20"/>
+
+    <Button
+        android:id="@+id/createArticleButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Create Article"
+        android:layout_margin="@dimen/dimen_16"/>
+
+</LinearLayout>
