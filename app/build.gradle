@@ -18,7 +18,7 @@ android {
         targetSdk 32
         versionCode 1
         versionName "1.0"
-
+        multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -38,16 +38,16 @@ android {
             isDefault true
             applicationIdSuffix ".dev"
             manifestPlaceholders = [appName: 'Dev - ' + rootProject.name]
-            buildConfigField "String", "BASE_URL", "\"https://dev.sopstar.com/\""
+            buildConfigField "String", "BASE_URL", "\"https://androidtest.ziademo.com/\""
         }
         alpha {
             applicationIdSuffix ".alpha"
             manifestPlaceholders = [appName: 'Alpha - ' + rootProject.name]
-            buildConfigField "String", "BASE_URL", "\"https://dev.sopstar.com/\""
+            buildConfigField "String", "BASE_URL", "\"https://androidtest.ziademo.com/\""
         }
         prod {
             manifestPlaceholders = [appName: rootProject.name + '-v' + versionName]
-            buildConfigField "String", "BASE_URL", "\"https://dev.sopstar.com/\""
+            buildConfigField "String", "BASE_URL", "\"https://androidtest.ziademo.com/\""
         }
     }
 
@@ -67,6 +67,8 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    implementation "androidx.multidex:multidex:2.0.1"
+
 
     implementation "androidx.activity:activity-ktx:1.6.0"
     implementation "androidx.fragment:fragment-ktx:1.5.3"
@@ -97,6 +99,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:1.7.10"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.3"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.5.1"
+    implementation 'gun0912.ted:tedbottompicker:2.0.1'
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
 }
