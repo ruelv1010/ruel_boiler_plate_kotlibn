@@ -13,13 +13,13 @@ android {
         debug {
             storeFile file('/Users/leojangelicomacario/ZiaplexProjects/Keystore/Untitled')
             storePassword 'ziaplex123@'
-            keyAlias 'ziaplex'
+            keyAlias 'boilerplate'
             keyPassword 'ziaplex123@'
         }
         release {
             storeFile file('/Users/leojangelicomacario/ZiaplexProjects/Keystore/Untitled')
             storePassword 'ziaplex123@'
-            keyAlias 'ziaplex'
+            keyAlias 'boilerplate'
             keyPassword 'ziaplex123@'
         }
     }
@@ -31,15 +31,17 @@ android {
         applicationId "com.android.boilerplate"
         minSdk 23
         targetSdk 32
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "0.0.2"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         release {
-            minifyEnabled false
+            debuggable false
+            minifyEnabled true
+            shrinkResources true
             signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
@@ -68,6 +70,17 @@ android {
         prod {
             manifestPlaceholders = [appName: rootProject.name + '-v' + versionName]
             buildConfigField "String", "BASE_URL", "\"https://androidtest.ziademo.com/\""
+        }
+    }
+
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            def appName = "BoilerPlate"
+            def flavorName = variant.flavorName
+            def versionCode = variant.versionCode
+            def versionName = variant.versionName
+            def apkName = appName + '-' + versionName + '(' + versionCode + ')-' + flavorName + '.apk'
+            output.outputFileName = apkName
         }
     }
 
