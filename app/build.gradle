@@ -9,6 +9,21 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        debug {
+            storeFile file('/Users/leojangelicomacario/ZiaplexProjects/Keystore/Untitled')
+            storePassword 'ziaplex123@'
+            keyAlias 'ziaplex'
+            keyPassword 'ziaplex123@'
+        }
+        release {
+            storeFile file('/Users/leojangelicomacario/ZiaplexProjects/Keystore/Untitled')
+            storePassword 'ziaplex123@'
+            keyAlias 'ziaplex'
+            keyPassword 'ziaplex123@'
+        }
+    }
+
     compileSdk 33
     flavorDimensions "default"
 
@@ -25,7 +40,12 @@ android {
     buildTypes {
         release {
             minifyEnabled false
+            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            minifyEnabled false
+            signingConfig signingConfigs.debug
         }
     }
     compileOptions {
