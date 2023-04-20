@@ -47,6 +47,7 @@ class HomeFragment: Fragment() {
         setClickListeners()
         observeUserInfo()
         viewModel.getUserInfo()
+
     }
 
     private fun observeUserInfo(){
