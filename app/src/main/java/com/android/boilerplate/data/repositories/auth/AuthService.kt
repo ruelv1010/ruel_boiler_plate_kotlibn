@@ -9,4 +9,7 @@ import retrofit2.http.POST
 interface AuthService {
     @POST("api/auth/login.json")
     suspend fun doLogin(@Body request: LoginRequest): Response<LoginResponse>
+
+    @POST("api/auth/refresh-token.json")
+    suspend fun doRefreshToken(): Response<LoginResponse>
 }

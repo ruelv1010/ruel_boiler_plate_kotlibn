@@ -22,4 +22,17 @@ class AuthRemoteDataSource @Inject constructor(private val authService: AuthServ
         return response.body() ?: throw NullPointerException("Response data is empty")
     }
 
+    suspend fun doRefreshToken(): LoginResponse{
+        val response = authService.doRefreshToken()
+
+        //Check if response code is 200 else it will throw HttpException
+        if (response.code() != HttpURLConnection.HTTP_OK) {
+            throw HttpException(response)
+        }
+
+        //Will automatically throw a NullPointerException when response.body() is Null
+
+        return response.body() ?: throw NullPointerException("Response data is empty")
+    }
+
 }

@@ -48,6 +48,17 @@ class AuthRepository @Inject constructor(
         }.flowOn(ioDispatcher)
     }
 
+    fun doRefreshToken() : Flow<LoginResponse> {
+        return flow{
+            val response = authRemoteDataSource.doRefreshToken()
+            val userInfo = response.data?: UserData()
+            val token = response.token.orEmpty()
+            encryptedDataManager.setAccessToken(token)
+            authLocalDataSource.updateToken(userInfo.user_id?:0, token)
+            emit(response)
+        }.flowOn(ioDispatcher)
+    }
+
     private fun setUpUserLocalData(user : UserData, token : String) : UserLocalData {
         return UserLocalData(
             avatar =user.avatar?.thumb_path,
