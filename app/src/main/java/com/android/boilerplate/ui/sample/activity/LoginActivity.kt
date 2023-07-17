@@ -72,6 +72,7 @@ class LoginActivity : AppCompatActivity() {
                 hideLoadingDialog()
                 handleInputError(viewState.errorData?: ErrorsData())
             }
+            else -> Unit
         }
     }
 

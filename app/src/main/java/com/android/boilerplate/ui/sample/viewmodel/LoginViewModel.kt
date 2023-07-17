@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.boilerplate.data.model.ErrorModel
 import com.android.boilerplate.data.repositories.auth.AuthRepository
+import com.android.boilerplate.utils.CommonLogger
 import com.android.boilerplate.utils.PopupErrorState
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -39,6 +40,24 @@ class LoginViewModel @Inject constructor(
                 .collect {
                     _loginSharedFlow.emit(
                         LoginViewState.Success(it.msg.orEmpty())
+                    )
+                }
+        }
+    }
+
+    fun getUserInfo() {
+        viewModelScope.launch {
+            authRepository.getUserInfo()
+                .onStart {
+                    _loginSharedFlow.emit(LoginViewState.Loading)
+                }
+                .catch { exception ->
+                    onError(exception)
+                    CommonLogger.instance.sysLogE("LoginViewModel", exception.localizedMessage, exception)
+                }
+                .collect {
+                    _loginSharedFlow.emit(
+                        LoginViewState.SuccessGetUserInfo(it)
                     )
                 }
         }
