@@ -15,6 +15,7 @@ import com.android.boilerplate.databinding.ActivityLoginBinding
 import com.android.boilerplate.ui.sample.viewmodel.LoginViewModel
 import com.android.boilerplate.ui.sample.viewmodel.LoginViewState
 import com.android.boilerplate.utils.dialog.CommonDialog
+import com.android.boilerplate.utils.dialog.CommonsErrorDialog
 import com.android.boilerplate.utils.setOnSingleClickListener
 import com.android.boilerplate.utils.showPopupError
 import dagger.hilt.android.AndroidEntryPoint
