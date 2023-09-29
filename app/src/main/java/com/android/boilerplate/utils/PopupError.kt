@@ -1,5 +1,6 @@
 package com.android.boilerplate.utils
 
+import android.app.Activity
 import android.app.Application
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
@@ -36,6 +37,7 @@ fun showPopupError(
         if (errorCode == PopupErrorState.SessionError){
             val intent = LoginActivity.getIntent(context)
             context.startActivity(intent)
+            (context as Activity).finishAffinity()
             AuthEncryptedDataManager().clearUserInfo()
             //include this if app has local database
         }
