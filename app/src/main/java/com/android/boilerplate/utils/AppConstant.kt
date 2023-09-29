@@ -1,13 +1,13 @@
 package com.android.boilerplate.utils
 
 object AppConstant {
-    val TOKEN_NOT_PROVIDED = "TOKEN_NOT_PROVIDED"
-    val TOKEN_EXPIRED = "TOKEN_EXPIRED"
-    val TOKEN_INVALID = "TOKEN_INVALID"
-    val INVALID_ID_AUTH_USER = "INVALID_ID_AUTH_USER"
-    val INVALID_TOKEN = "INVALID_TOKEN"
-    val ACCOUNT_LOGOUT = "ACCOUNT_LOGOUT"
-    val EXPIRED_TOKEN = "EXPIRED_TOKEN"
+    private const val TOKEN_NOT_PROVIDED = "TOKEN_NOT_PROVIDED"
+    private const val TOKEN_EXPIRED = "TOKEN_EXPIRED"
+    private const val TOKEN_INVALID = "TOKEN_INVALID"
+    private const val INVALID_ID_AUTH_USER = "INVALID_ID_AUTH_USER"
+    private const val INVALID_TOKEN = "INVALID_TOKEN"
+    private const val ACCOUNT_LOGOUT = "ACCOUNT_LOGOUT"
+    private const val EXPIRED_TOKEN = "EXPIRED_TOKEN"
 
     fun isSessionStatusCode(code: String): Boolean{
         return code == TOKEN_NOT_PROVIDED ||
