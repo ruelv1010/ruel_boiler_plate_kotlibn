@@ -7,6 +7,7 @@ import com.android.boilerplate.data.repositories.article.ArticleRepository
 import com.android.boilerplate.data.repositories.article.response.ArticleData
 import com.android.boilerplate.data.repositories.article.response.ArticleListResponse
 import com.android.boilerplate.data.repositories.auth.AuthRepository
+import com.android.boilerplate.utils.AppConstant
 import com.android.boilerplate.utils.PopupErrorState
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -78,10 +79,15 @@ class ArticleListViewModel @Inject constructor(
                 val errorBody = exception.response()?.errorBody()
                 val gson = Gson()
                 val type = object : TypeToken<ErrorModel>() {}.type
-                var errorResponse: ErrorModel? = gson.fromJson(errorBody?.charStream(), type)
+                val errorResponse: ErrorModel? = gson.fromJson(errorBody?.charStream(), type)
                 _articleSharedFlow.emit(
                     ArticleListViewState.PopupError(
-                        PopupErrorState.HttpError, errorResponse?.msg.orEmpty()
+                        if (AppConstant.isSessionStatusCode(errorResponse?.status_code.orEmpty())){
+                            PopupErrorState.SessionError
+                        }else{
+                            PopupErrorState.HttpError
+                        }
+                        , errorResponse?.msg.orEmpty()
                     )
                 )
             }
