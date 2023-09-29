@@ -8,14 +8,20 @@ object AppConstant {
     private const val INVALID_TOKEN = "INVALID_TOKEN"
     private const val ACCOUNT_LOGOUT = "ACCOUNT_LOGOUT"
     private const val EXPIRED_TOKEN = "EXPIRED_TOKEN"
+    private const val UNAUTHORIZED = "UNAUTHORIZED"
+
+    private val sessionStatusArray = arrayOf(
+        TOKEN_NOT_PROVIDED,
+        TOKEN_EXPIRED,
+        TOKEN_INVALID,
+        INVALID_ID_AUTH_USER,
+        INVALID_TOKEN,
+        ACCOUNT_LOGOUT,
+        EXPIRED_TOKEN,
+        UNAUTHORIZED,
+    )
 
     fun isSessionStatusCode(code: String): Boolean{
-        return code == TOKEN_NOT_PROVIDED ||
-                code == TOKEN_EXPIRED ||
-                code == TOKEN_INVALID ||
-                code == INVALID_ID_AUTH_USER ||
-                code == INVALID_TOKEN ||
-                code == ACCOUNT_LOGOUT ||
-                code == EXPIRED_TOKEN
+        return sessionStatusArray.contains(code)
     }
 }
