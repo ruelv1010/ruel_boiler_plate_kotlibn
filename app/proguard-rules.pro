@@ -42,9 +42,9 @@
 
 #Encrpted Shared Pref
 -keep class com.google.crypto.** { *; }
--keepclassmembers class * extends com.google.crypto.tink.shaded.protobuf.GeneratedMessageLite {
-  <fields>;
-}
+#-keepclassmembers class * extends com.google.crypto.tink.shaded.protobuf.GeneratedMessageLite {
+#  <fields>;
+#}
 
 -keep class com.android.app.data.model.* { *; }
 
