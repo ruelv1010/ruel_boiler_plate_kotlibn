@@ -4,28 +4,31 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.android.app.data.repositories.article.response.ArticleData
-import com.android.app.databinding.AdapterArticleBinding
-import com.android.app.utils.loadImage
+import syntactics.android.app.databinding.AdapterArticleBinding
+import syntactics.boilerplate.app.data.model.TodoModel
+
+
+import syntactics.boilerplate.app.utils.loadImage
+
 
 class ArticleAdapter (val context: Context, val clickListener: ArticleCallback) :
     RecyclerView.Adapter<ArticleAdapter.AdapterViewHolder>() {
 
-    private val adapterData = mutableListOf<ArticleData>()
+    private val adapterData = mutableListOf<TodoModel>()
 
     fun clear(){
         adapterData.clear()
         notifyDataSetChanged()
     }
 
-    fun appendData(newData: List<ArticleData>) {
+    fun appendData(newData: List<TodoModel>) {
         val startAt = adapterData.size
         adapterData.addAll(newData)
         notifyItemRangeInserted(startAt, newData.size)
     }
 
 
-    fun getData(): MutableList<ArticleData> = adapterData
+    fun getData(): MutableList<TodoModel> = adapterData
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AdapterViewHolder {
         val binding = AdapterArticleBinding
@@ -41,10 +44,10 @@ class ArticleAdapter (val context: Context, val clickListener: ArticleCallback) 
     inner class AdapterViewHolder(val binding: AdapterArticleBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun displayData(data: ArticleData) = with(itemView) {
-            binding.titleTextView.text = data.name
+        fun displayData(data: TodoModel) = with(itemView) {
+            binding.titleTextView.text = data.title
             binding.descTextView.text = data.description
-            binding.articleImageView.loadImage(data.image?.thumb_path, context)
+            binding.articleImageView.loadImage("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTRQsy_tHu9CJs0UkIa5FGBik1IYntPf1kk2Q&s", context)
             binding.articleLinearLayout.setOnClickListener {
                 clickListener.onItemClicked(data)
             }
@@ -52,7 +55,7 @@ class ArticleAdapter (val context: Context, val clickListener: ArticleCallback) 
     }
 
     interface ArticleCallback{
-        fun onItemClicked(data: ArticleData)
+        fun onItemClicked(data: TodoModel)
     }
 
     override fun getItemCount(): Int = adapterData.size

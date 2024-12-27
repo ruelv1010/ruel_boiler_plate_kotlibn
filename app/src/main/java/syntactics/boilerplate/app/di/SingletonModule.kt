@@ -2,12 +2,13 @@ package syntactics.boilerplate.app.di
 
 import android.app.Application
 import androidx.room.Room
-import com.android.app.data.local.BoilerPlateDatabase
-import com.android.app.security.AuthEncryptedDataManager
+
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import syntactics.boilerplate.app.data.local.BoilerPlateDatabase
+import syntactics.boilerplate.app.security.AuthEncryptedDataManager
 import javax.inject.Singleton
 
 @Module

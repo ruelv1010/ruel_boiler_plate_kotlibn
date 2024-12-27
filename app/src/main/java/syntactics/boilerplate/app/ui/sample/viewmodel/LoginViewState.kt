@@ -1,8 +1,9 @@
 package syntactics.boilerplate.app.ui.sample.viewmodel
 
-import com.android.app.data.local.UserLocalData
-import com.android.app.data.model.ErrorsData
-import com.android.app.utils.PopupErrorState
+import syntactics.boilerplate.app.data.local.UserLocalData
+import syntactics.boilerplate.app.data.model.ErrorsData
+import syntactics.boilerplate.app.utils.PopupErrorState
+
 
 sealed class LoginViewState{
     object Loading : LoginViewState()

@@ -1,7 +1,8 @@
 package syntactics.boilerplate.app.data.repositories.article.response
 
-import com.android.app.data.repositories.auth.response.AvatarData
-import com.android.app.data.repositories.auth.response.DateCreatedData
+import syntactics.boilerplate.app.data.repositories.auth.response.AvatarData
+import syntactics.boilerplate.app.data.repositories.auth.response.DateCreatedData
+
 
 data class ArticleResponse(
     val data: ArticleData? = null,

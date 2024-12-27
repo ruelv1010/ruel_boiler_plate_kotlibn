@@ -14,7 +14,8 @@ import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
-import com.android.app.databinding.CommonDialogBinding
+import syntactics.android.app.databinding.CommonDialogBinding
+
 
 class CommonDialog private constructor(
     private val dismissListener: (() -> Unit)? = null

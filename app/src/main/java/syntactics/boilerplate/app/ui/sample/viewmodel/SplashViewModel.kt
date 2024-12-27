@@ -2,15 +2,17 @@ package syntactics.boilerplate.app.ui.sample.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.android.app.data.model.ErrorModel
-import com.android.app.data.repositories.auth.AuthRepository
-import com.android.app.utils.PopupErrorState
+
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
+import syntactics.boilerplate.app.data.model.ErrorModel
+import syntactics.boilerplate.app.data.repositories.auth.AuthRepository
+import syntactics.boilerplate.app.ui.sample.activity.MainActivity
+import syntactics.boilerplate.app.utils.PopupErrorState
 import java.io.IOException
 import java.util.concurrent.TimeoutException
 import javax.inject.Inject

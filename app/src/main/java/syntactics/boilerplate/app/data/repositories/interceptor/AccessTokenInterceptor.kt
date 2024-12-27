@@ -1,10 +1,10 @@
 package syntactics.boilerplate.app.data.repositories.interceptor
 
-import com.android.app.security.AuthEncryptedDataManager
-import com.android.app.utils.CommonLogger
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
+import syntactics.boilerplate.app.security.AuthEncryptedDataManager
+import syntactics.boilerplate.app.utils.CommonLogger
 
 class AccessTokenInterceptor(
     private val encryptedDataManager: AuthEncryptedDataManager = AuthEncryptedDataManager(),

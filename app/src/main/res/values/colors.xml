@@ -8,9 +8,9 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="color_primary">#FFBB86FC</color>
+    <color name="color_primary">#FFF3731E</color>
     <color name="color_primaryDark">#FF6200EE</color>
     <color name="color_accent">#FF3700B3</color>
     <color name="commons_text_hint">#979797</color>
-
+    <color name="bg_edittext">#fffff0</color>
 </resources>

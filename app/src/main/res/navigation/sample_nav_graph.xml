@@ -7,15 +7,25 @@
 
     <fragment
         android:id="@+id/navigation_home"
-        android:name="com.android.boilerplate.ui.sample.fragment.HomeFragment"
+        android:name="syntactics.boilerplate.app.ui.sample.fragment.HomeFragment"
         android:label=""
         tools:layout="@layout/fragment_home"/>
 
     <fragment
+        android:id="@+id/navigation_create"
+        android:name="syntactics.boilerplate.app.ui.sample.fragment.CreateFragment"
+        android:label=""
+        tools:layout="@layout/fragment_create"/>
+    <fragment
         android:id="@+id/navigation_article"
-        android:name="com.android.boilerplate.ui.sample.fragment.ArticleFragment"
+        android:name="syntactics.boilerplate.app.ui.sample.fragment.ArticleFragment"
         android:label=""
         tools:layout="@layout/fragment_article" />
+    <fragment
+        android:id="@+id/navigation_profile"
+        android:name="syntactics.boilerplate.app.ui.sample.fragment.ProfileFragment"
+        android:label=""
+        tools:layout="@layout/fragment_profile" />
 
 
 </navigation>

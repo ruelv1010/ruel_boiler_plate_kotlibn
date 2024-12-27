@@ -8,21 +8,25 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.android.app.databinding.FragmentHomeBinding
-import com.android.app.ui.sample.viewmodel.LoginViewModel
-import com.android.app.ui.sample.viewmodel.LoginViewState
-import com.android.app.utils.dialog.WebviewDialog
-import com.android.app.utils.setOnSingleClickListener
-import com.android.app.utils.showPopupError
+
+
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import syntactics.android.app.databinding.FragmentHomeBinding
+import syntactics.boilerplate.app.security.AuthEncryptedDataManager
+import syntactics.boilerplate.app.ui.sample.activity.MainActivity
+import syntactics.boilerplate.app.ui.sample.viewmodel.LoginViewModel
+import syntactics.boilerplate.app.ui.sample.viewmodel.LoginViewState
+import syntactics.boilerplate.app.utils.setOnSingleClickListener
+import syntactics.boilerplate.app.utils.showPopupError
 
 @AndroidEntryPoint
 class HomeFragment: Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
     private val viewModel: LoginViewModel by viewModels()
-
+    private val activity by lazy { requireActivity() as MainActivity }
+    private lateinit var encryptedDataManager: AuthEncryptedDataManager
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -40,7 +44,8 @@ class HomeFragment: Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setClickListeners()
         observeUserInfo()
-        viewModel.getUserInfo()
+        encryptedDataManager = AuthEncryptedDataManager()
+
 
     }
 
@@ -66,17 +71,9 @@ class HomeFragment: Fragment() {
     }
 
     private fun setClickListeners() = binding.run {
-        loadWebViewDialogButton.setOnSingleClickListener {
-            openWebViewDialog()
-        }
+
     }
 
-    private fun openWebViewDialog(){
-        WebviewDialog.openDialog(
-            childFragmentManager,
-            "https://www.pmti.biz/"
-        )
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()

@@ -1,18 +1,19 @@
 package syntactics.boilerplate.app.di
 
-import syntactics.boilerplate.app.BuildConfig
-import com.android.app.data.local.BoilerPlateDatabase
-import com.android.app.data.local.UserDao
-import com.android.app.data.repositories.AppRetrofitService
-import com.android.app.data.repositories.auth.AuthLocalDataSource
-import com.android.app.data.repositories.auth.AuthRemoteDataSource
-import com.android.app.data.repositories.auth.AuthRepository
-import com.android.app.data.repositories.auth.AuthService
-import com.android.app.security.AuthEncryptedDataManager
+
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
+import syntactics.android.app.BuildConfig
+import syntactics.boilerplate.app.data.local.BoilerPlateDatabase
+import syntactics.boilerplate.app.data.local.UserDao
+import syntactics.boilerplate.app.data.repositories.AppRetrofitService
+import syntactics.boilerplate.app.data.repositories.auth.AuthLocalDataSource
+import syntactics.boilerplate.app.data.repositories.auth.AuthRemoteDataSource
+import syntactics.boilerplate.app.data.repositories.auth.AuthRepository
+import syntactics.boilerplate.app.data.repositories.auth.AuthService
+import syntactics.boilerplate.app.security.AuthEncryptedDataManager
 
 @Module
 @InstallIn(ViewModelComponent::class)
@@ -21,7 +22,7 @@ class AuthModule {
     @Provides
     fun providesAuthService(): AuthService {
         return AppRetrofitService.Builder().build(
-            syntactics.boilerplate.app.BuildConfig.BASE_URL,
+            BuildConfig.BASE_URL,
             AuthService::class.java
         )
     }

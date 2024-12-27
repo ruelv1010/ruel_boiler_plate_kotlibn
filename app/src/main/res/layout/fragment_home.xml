@@ -5,10 +5,22 @@
     android:padding="@dimen/dimen_16"
     android:orientation="vertical">
 
-    <Button
-        android:id="@+id/loadWebViewDialogButton"
+    <ImageView
+        android:layout_width="@dimen/dimen_100"
+        android:layout_height="@dimen/dimen_100"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/dimen_20"
+        android:src="@drawable/syntactics_brand" />
+    <TextView
         android:layout_width="match_parent"
+        android:textAlignment="center"
+        android:textAllCaps="true"
+        android:textColor="@color/color_primary"
+        android:fontFamily="@font/fira_sans_semibold"
+        android:textSize="@dimen/font_24"
+        android:layout_marginTop="@dimen/dimen_20"
         android:layout_height="wrap_content"
-        android:text="Load sample webview dialog"/>
+        android:text="@string/syn_lbl"
+        />
 
 </LinearLayout>

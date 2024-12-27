@@ -1,7 +1,8 @@
 package syntactics.boilerplate.app.data.repositories.auth
 
-import com.android.app.data.local.UserDao
-import com.android.app.data.local.UserLocalData
+
+import syntactics.boilerplate.app.data.local.UserDao
+import syntactics.boilerplate.app.data.local.UserLocalData
 import javax.inject.Inject
 
 class AuthLocalDataSource @Inject constructor(

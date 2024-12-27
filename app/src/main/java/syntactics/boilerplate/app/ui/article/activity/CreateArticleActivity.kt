@@ -1,10 +1,13 @@
 package syntactics.boilerplate.app.ui.article.activity
 
 import android.Manifest
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
@@ -12,17 +15,24 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
-import com.android.app.R
-import com.android.app.data.model.ErrorsData
-import com.android.app.databinding.ActivityCreateArticleBinding
-import com.android.app.ui.article.viewmodel.CreateArticleViewModel
-import com.android.app.ui.article.viewmodel.CreateArticleViewState
-import syntactics.boilerplate.app.utils.dialog.CommonDialog
-import com.android.app.utils.setOnSingleClickListener
-import com.android.app.utils.showPopupError
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
+
+
 import dagger.hilt.android.AndroidEntryPoint
 
 import kotlinx.coroutines.launch
+import syntactics.android.app.R
+import syntactics.android.app.databinding.ActivityCreateArticleBinding
+import syntactics.boilerplate.app.data.model.ErrorsData
+import syntactics.boilerplate.app.data.model.TodoModel
+import syntactics.boilerplate.app.ui.article.viewmodel.CreateArticleViewModel
+import syntactics.boilerplate.app.ui.article.viewmodel.CreateArticleViewState
+import syntactics.boilerplate.app.utils.FirebaseHelper
+import syntactics.boilerplate.app.utils.loadImage
+import syntactics.boilerplate.app.utils.setOnSingleClickListener
+import syntactics.boilerplate.app.utils.showPopupError
+import java.util.UUID
 
 
 @AndroidEntryPoint
@@ -32,6 +42,11 @@ class CreateArticleActivity : AppCompatActivity() {
     private val viewModel: CreateArticleViewModel by viewModels()
     private var loadingDialog: syntactics.boilerplate.app.utils.dialog.CommonDialog? = null
 
+    private lateinit var db: FirebaseFirestore
+    private lateinit var storageRef: FirebaseStorage
+
+    private var imageUri: Uri? = null
+    private val firebaseHelper = FirebaseHelper()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCreateArticleBinding.inflate(layoutInflater)
@@ -39,20 +54,65 @@ class CreateArticleActivity : AppCompatActivity() {
         setContentView(view)
         setClickListener()
         observeArticle()
+
     }
 
     private fun setClickListener() = binding.run{
         articleImageView.setOnSingleClickListener {
-            checkPermission()
+            pickImageFromGallery()
         }
         createArticleButton.setOnSingleClickListener {
-            viewModel.doCreateArticle(
-                titleEditText.text.toString(),
-                descEditText.text.toString(),
-                viewModel.imageFile
-            )
+            val title = titleEditText.text.toString()
+            val description = descEditText.text.toString()
+
+            if (title.isEmpty() || description.isEmpty()) {
+                Toast.makeText(this@CreateArticleActivity, "Title and Description cannot be empty", Toast.LENGTH_SHORT).show()
+            } else {
+                uploadTodo(title, description)
+            }
+         }
+    }
+    private fun pickImageFromGallery() {
+        val intent = Intent(Intent.ACTION_PICK)
+        intent.type = "image/*"
+        startActivityForResult(intent, IMAGE_PICK_CODE)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == IMAGE_PICK_CODE && resultCode == Activity.RESULT_OK) {
+            imageUri = data?.data
+            Toast.makeText(this, "Image selected", Toast.LENGTH_SHORT).show()
+            binding.articleImageView.loadImage(imageUri.toString(),this@CreateArticleActivity)
         }
     }
+
+
+    private fun uploadTodo(title: String, description: String) {
+        if (imageUri != null) {
+            firebaseHelper.uploadImage(imageUri!!, { imageUrl ->
+
+             //   val todo = TodoModel(title = title, description = description, imageUrl = imageUrl)
+              //  saveTodoToFirebase(todo)
+            }, { error ->
+                Toast.makeText(this, "Image upload failed: ${error.message}", Toast.LENGTH_SHORT).show()
+            })
+        } else {
+            val todo = TodoModel(title = title, description = description)
+            saveTodoToFirebase(todo)
+        }
+    }
+
+    // Function to save the TodoModel to Firebase Database
+    private fun saveTodoToFirebase(todo: TodoModel) {
+        firebaseHelper.addTodoItem(todo, {
+            Toast.makeText(this, "Todo added successfully", Toast.LENGTH_SHORT).show()
+            finish()
+        }, { error ->
+            Toast.makeText(this, "Failed to add Todo: ${error.message}", Toast.LENGTH_SHORT).show()
+        })
+    }
+
 
     private fun observeArticle(){
         lifecycleScope.launch {
@@ -61,6 +121,8 @@ class CreateArticleActivity : AppCompatActivity() {
             }
         }
     }
+
+
 
     private fun handleViewState(viewState: CreateArticleViewState){
         when(viewState){
@@ -89,48 +151,8 @@ class CreateArticleActivity : AppCompatActivity() {
     }
 
 
-    private fun checkPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-            != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(this,
-                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                PERMISSION_WRITE_EXTERNAL
-            )
-        } else {
-            openImagePickerDialog()
-        }
-    }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String?>,
-        grantResults: IntArray,
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (PERMISSION_WRITE_EXTERNAL == requestCode) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                openImagePickerDialog()
-            } else {
-                Toast.makeText(this,  "Permission Granted", Toast.LENGTH_LONG).show()
-            }
-        }
-    }
 
-    private fun openImagePickerDialog() {
-//        TedBottomPicker.with(this as FragmentActivity)
-//            .setTitle("Upload Image")
-//            .showCameraTile(true)
-//            .showGalleryTile(true)
-//            .show {
-//                viewModel.imageFile = it.toFile()
-//                Glide.with(this)
-//                    .load(it)
-//                    .placeholder(R.color.color_primary)
-//                    .error(R.color.color_primary)
-//                    .into(binding.articleImageView)
-//            }
-    }
 
     private fun showLoadingDialog(@StringRes strId: Int) {
         if (loadingDialog == null) {
@@ -153,9 +175,15 @@ class CreateArticleActivity : AppCompatActivity() {
 
 
     companion object {
+        const val IMAGE_PICK_CODE = 1000
         fun getIntent(context: Context): Intent {
             return Intent(context, CreateArticleActivity::class.java)
         }
         private const val PERMISSION_WRITE_EXTERNAL = 101
     }
+
+
+
+
+
 }

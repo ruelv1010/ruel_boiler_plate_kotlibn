@@ -1,9 +1,8 @@
 package syntactics.boilerplate.app.data.repositories
 
 import android.annotation.SuppressLint
-import syntactics.boilerplate.app.BuildConfig
-import com.android.app.data.repositories.interceptor.AccessTokenInterceptor
-import com.android.app.data.repositories.interceptor.NoAccessTokenInterceptor
+
+
 import okhttp3.*
 import okhttp3.CipherSuite.Companion.TLS_DHE_RSA_WITH_AES_128_GCM_SHA256
 import okhttp3.CipherSuite.Companion.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
@@ -12,6 +11,9 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
+import syntactics.android.app.BuildConfig
+import syntactics.boilerplate.app.data.repositories.interceptor.AccessTokenInterceptor
+import syntactics.boilerplate.app.data.repositories.interceptor.NoAccessTokenInterceptor
 import java.net.InetAddress
 import java.security.GeneralSecurityException
 import java.security.cert.X509Certificate
@@ -53,8 +55,8 @@ abstract class BaseRepository constructor(
         retrofit = Retrofit.Builder()
                 .baseUrl(url)
                 .addConverterFactory(MoshiConverterFactory.create())
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .client(createOkHttpClient())
+               .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+               .client(createOkHttpClient())
                 .build()
     }
 
@@ -66,7 +68,7 @@ abstract class BaseRepository constructor(
             builder.addInterceptor(interceptor!!)
         }
 
-        if (syntactics.boilerplate.app.BuildConfig.DEBUG && loggingInterceptor != null) {
+        if (BuildConfig.DEBUG && loggingInterceptor != null) {
             // Add logging interceptor (Console log) Default is in debug mode only
             builder.addInterceptor(loggingInterceptor!!)
         }

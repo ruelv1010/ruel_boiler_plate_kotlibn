@@ -1,7 +1,8 @@
 package syntactics.boilerplate.app.ui.article.viewmodel
 
-import com.android.app.data.repositories.article.response.ArticleData
-import com.android.app.utils.PopupErrorState
+import syntactics.boilerplate.app.data.repositories.article.response.ArticleData
+import syntactics.boilerplate.app.utils.PopupErrorState
+
 
 sealed class ArticleDetailViewState{
     object Loading : ArticleDetailViewState()

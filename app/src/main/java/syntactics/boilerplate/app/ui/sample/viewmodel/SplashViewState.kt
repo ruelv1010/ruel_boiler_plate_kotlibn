@@ -1,6 +1,6 @@
 package syntactics.boilerplate.app.ui.sample.viewmodel
 
-import com.android.app.utils.PopupErrorState
+import syntactics.boilerplate.app.utils.PopupErrorState
 
 
 sealed class SplashViewState {

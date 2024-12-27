@@ -6,10 +6,10 @@ import android.security.keystore.KeyProperties
 import androidx.core.content.edit
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
-import com.android.app.base.CommonsLib
-import com.android.app.data.repositories.auth.response.AvatarData
-import com.android.app.data.repositories.auth.response.DateCreatedData
-import com.android.app.data.repositories.auth.response.UserData
+import syntactics.boilerplate.app.base.CommonsLib
+import syntactics.boilerplate.app.data.repositories.auth.response.AvatarData
+import syntactics.boilerplate.app.data.repositories.auth.response.DateCreatedData
+import syntactics.boilerplate.app.data.repositories.auth.response.UserData
 
 
 class AuthEncryptedDataManager {
@@ -36,7 +36,14 @@ class AuthEncryptedDataManager {
 
     /**
      * Function used to save the user access token in this sharedPref
+     *
      */
+
+    fun setID(myID: String) {
+        sharedPreferences.edit(true) {
+            putString(MYID, myID)
+        }
+    }
     fun setAccessToken(token: String) {
         sharedPreferences.edit(true) {
             putString(ACCESS_TOKEN, token)
@@ -47,7 +54,7 @@ class AuthEncryptedDataManager {
      * Function used to get the user access token in this sharedPref
      */
     fun getAccessToken() = sharedPreferences.getString(ACCESS_TOKEN, "") ?: ""
-
+    fun getMYID() = sharedPreferences.getString(MYID, "") ?: ""
     private var inMemoryUserData: UserData? = null
     private var inMemoryAvatarData: AvatarData? = null
     private var inMemoryDateCreatedData: DateCreatedData? = null
@@ -179,6 +186,7 @@ class AuthEncryptedDataManager {
     }
 
     companion object{
+        private const val MYID = "MYID"
         private const val ACCESS_TOKEN = "ACCESS_TOKEN"
         private const val ENCRYPTED_PREFS_NAME = "ENCRYPTED_PREFS_NAME"
         private const val ENCRYPTED_ALIAS_NAME = "ENCRYPTED_ALIAS_NAME"

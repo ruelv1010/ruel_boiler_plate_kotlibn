@@ -8,16 +8,23 @@ import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.android.app.R
-import com.android.app.data.model.ErrorsData
-import com.android.app.databinding.ActivityRegisterBinding
-import com.android.app.ui.sample.viewmodel.LoginViewModel
-import com.android.app.ui.sample.viewmodel.LoginViewState
-import syntactics.boilerplate.app.utils.dialog.CommonDialog
-import com.android.app.utils.setOnSingleClickListener
-import com.android.app.utils.showPopupError
+import com.google.firebase.FirebaseApp
+import com.google.firebase.auth.FirebaseAuth
+
+
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import syntactics.android.app.R
+import syntactics.android.app.databinding.ActivityRegisterBinding
+import syntactics.boilerplate.app.data.model.ErrorsData
+import syntactics.boilerplate.app.data.model.MyUsersModel
+import syntactics.boilerplate.app.data.model.TodoModel
+import syntactics.boilerplate.app.ui.sample.viewmodel.LoginViewModel
+import syntactics.boilerplate.app.ui.sample.viewmodel.LoginViewState
+import syntactics.boilerplate.app.utils.FirebaseHelper
+import syntactics.boilerplate.app.utils.FirebaseUsersHelper
+import syntactics.boilerplate.app.utils.setOnSingleClickListener
+import syntactics.boilerplate.app.utils.showPopupError
 
 @AndroidEntryPoint
 class RegisterActivity : AppCompatActivity() {
@@ -25,8 +32,8 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRegisterBinding
     private var loadingDialog: syntactics.boilerplate.app.utils.dialog.CommonDialog? = null
     private val viewModel: LoginViewModel by viewModels()
-
-
+    private lateinit var auth: FirebaseAuth
+    private val firebaseHelper = FirebaseUsersHelper()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityRegisterBinding.inflate(layoutInflater)
@@ -34,15 +41,67 @@ class RegisterActivity : AppCompatActivity() {
         setContentView(view)
         setupClickListener()
         observeLogin()
+        auth = FirebaseAuth.getInstance()
+        FirebaseApp.initializeApp(this);
+
     }
 
     private fun setupClickListener() = binding.run{
         loginButton.setOnSingleClickListener {
-            viewModel.doLoginAccount(
-                emailEditText.text.toString(),
-                passwordEditText.text.toString()
-            )
+             if (passwordEditText.text.toString() == "" || passwordConfirmEditText.text.toString() == ""|| emailEditText.text.toString() == "")
+        {
+            Toast.makeText(this@RegisterActivity, "Please complete all fields", Toast.LENGTH_SHORT).show()
+            }
+            else if (passwordEditText.text.toString()==passwordConfirmEditText.text.toString()){
+
+
+
+                signUp( emailEditText.text.toString(),
+                    passwordEditText.text.toString())
+            }
+            else{
+                Toast.makeText(this@RegisterActivity, "Password not match", Toast.LENGTH_SHORT).show()
+            }
+
         }
+
+
+
+
+        signUpTextView.setOnSingleClickListener {
+            val intent = LoginActivity.getIntent(this@RegisterActivity)
+            startActivity(intent)
+        }
+    }
+
+
+    private fun saveUsersFirebase(myUsersModel: MyUsersModel) {
+        firebaseHelper.addTodoItem(myUsersModel, {
+            Toast.makeText(this, "Todo added successfully", Toast.LENGTH_SHORT).show()
+        }, { error ->
+            Toast.makeText(this, "Failed to add Todo: ${error.message}", Toast.LENGTH_SHORT).show()
+        })
+    }
+
+    private fun signUp(email: String, password: String) {
+        auth.createUserWithEmailAndPassword(email, password)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    val user = auth.currentUser
+                    val myUsersModel = MyUsersModel(email =user?.email,
+                        first_name = binding.firstNameEditText.text.toString(),
+                        imgurl = user?.email,
+                        last_name = binding.lastNameEditText.text.toString(),
+                        password = binding.passwordEditText.text.toString(),
+                        user_id = user?.uid,
+                    isfirst = "true")
+                    saveUsersFirebase(myUsersModel)
+                    Toast.makeText(this, "Sign-up successful: ${user?.email}", Toast.LENGTH_SHORT).show()
+                } else {
+                    // Sign-up failed
+                    Toast.makeText(this, "Error: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
     }
 
     private fun observeLogin(){

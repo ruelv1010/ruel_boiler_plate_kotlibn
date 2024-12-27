@@ -13,8 +13,9 @@ import androidx.core.os.bundleOf
 import androidx.core.view.isGone
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
-import com.android.app.R
-import com.android.app.databinding.CommonsDialogErrorBinding
+import syntactics.android.app.R
+import syntactics.android.app.databinding.CommonsDialogErrorBinding
+
 
 class CommonsErrorDialog private constructor(
     private val dismissListener: (() -> Unit)? = null

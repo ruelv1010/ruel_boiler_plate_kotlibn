@@ -8,11 +8,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.android.app.databinding.ActivitySplashscreenBinding
-import com.android.app.ui.sample.viewmodel.SplashViewModel
-import com.android.app.ui.sample.viewmodel.SplashViewState
+
+
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import syntactics.android.app.databinding.ActivitySplashscreenBinding
+import syntactics.boilerplate.app.ui.sample.viewmodel.SplashViewModel
+import syntactics.boilerplate.app.ui.sample.viewmodel.SplashViewState
 
 
 @AndroidEntryPoint
@@ -27,7 +29,7 @@ class SplashScreenActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
         observeRefreshToken()
-        viewModel.doRefreshToken()
+       viewModel.doRefreshToken()
     }
 
     private fun observeRefreshToken() {

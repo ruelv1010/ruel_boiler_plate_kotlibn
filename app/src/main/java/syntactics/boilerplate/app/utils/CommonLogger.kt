@@ -2,8 +2,8 @@ package syntactics.boilerplate.app.utils
 
 import android.annotation.SuppressLint
 import android.util.Log
-import com.android.app.base.CommonsLib
-import syntactics.boilerplate.app.BuildConfig
+import syntactics.android.app.BuildConfig
+import syntactics.boilerplate.app.base.CommonsLib
 
 
 /**
@@ -16,7 +16,7 @@ import syntactics.boilerplate.app.BuildConfig
 @SuppressLint("LogNotTimber")
 class CommonLogger {
 
-    private val isDebugMode = syntactics.boilerplate.app.BuildConfig.DEBUG
+    private val isDebugMode = BuildConfig.DEBUG
 
     fun devLog(tag: String = "Default", message: Any?, throwable: Throwable? = null) {
         if (isDebugMode && CommonsLib.isDevCommonLoggerEnable)

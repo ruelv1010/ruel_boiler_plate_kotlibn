@@ -1,9 +1,10 @@
 package syntactics.boilerplate.app.data.repositories.interceptor
 
-import com.android.app.utils.CommonLogger
+
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
+import syntactics.boilerplate.app.utils.CommonLogger
 
 class NoAccessTokenInterceptor(private val commonLogger: CommonLogger = CommonLogger.instance): Interceptor {
 

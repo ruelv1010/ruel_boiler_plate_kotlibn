@@ -1,14 +1,15 @@
 package syntactics.boilerplate.app.data.repositories.auth
 
-import com.android.app.data.local.UserLocalData
-import com.android.app.data.repositories.auth.response.LoginResponse
-import com.android.app.data.repositories.auth.response.UserData
-import com.android.app.security.AuthEncryptedDataManager
+
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import syntactics.boilerplate.app.data.local.UserLocalData
+import syntactics.boilerplate.app.data.repositories.auth.response.LoginResponse
+import syntactics.boilerplate.app.data.repositories.auth.response.UserData
+import syntactics.boilerplate.app.security.AuthEncryptedDataManager
 import javax.inject.Inject
 
 //class AuthRepository @Inject constructor(

@@ -1,17 +1,26 @@
 package syntactics.boilerplate.app.ui.article.viewmodel
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.android.app.data.model.ErrorModel
-import com.android.app.data.repositories.article.ArticleRepository
-import com.android.app.utils.AppConstant
-import com.android.app.utils.PopupErrorState
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.firestore.FirebaseFirestore
+
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
+import syntactics.boilerplate.app.data.model.ErrorModel
+import syntactics.boilerplate.app.data.model.TodoModel
+import syntactics.boilerplate.app.data.repositories.article.ArticleRepository
+import syntactics.boilerplate.app.utils.AppConstant
+import syntactics.boilerplate.app.utils.PopupErrorState
 import java.io.IOException
 import java.util.concurrent.TimeoutException
 import javax.inject.Inject
@@ -26,8 +35,61 @@ class ArticleListViewModel @Inject constructor(
     val articleSharedFlow: SharedFlow<ArticleListViewState> =
         _articleSharedFlow.asSharedFlow()
 
+
+
+
     private var currentPage = 0
     private var hasMorePage = true
+
+    private val _viewState = MutableStateFlow<ArticleListViewState>(ArticleListViewState.Initial)
+
+    // Expose as immutable state flow
+    val viewState: StateFlow<ArticleListViewState> = _viewState.asStateFlow()
+
+
+    private val database = FirebaseDatabase.getInstance()
+    private val todosRef = database.getReference("Todo")
+
+    // Initialize ViewModel and fetch todos
+    init {
+        fetchTodos()
+    }
+
+    // Fetch todos using coroutines
+    fun fetchTodos() {
+        viewModelScope.launch {
+            try {
+                // Set loading state
+                _viewState.value = ArticleListViewState.Loading
+
+                // Fetch todos
+                val todoList = mutableListOf<TodoModel>()
+
+                todosRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        for (childSnapshot in snapshot.children) {
+                            val todo = childSnapshot.getValue(TodoModel::class.java)
+                            todo?.let {
+                                val todoWithId = it.copy(id = childSnapshot.key ?: "")
+                                todoList.add(todoWithId)
+                            }
+                        }
+
+                        // Update state with todos
+                        _viewState.value = ArticleListViewState.SuccessTodo(todoList)
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        // Handle error
+                        _viewState.value = ArticleListViewState.ErrorTodo(error.message)
+                    }
+                })
+            } catch (e: Exception) {
+                // Catch any unexpected errors
+                _viewState.value = ArticleListViewState.ErrorTodo(e.localizedMessage ?: "Unknown error")
+            }
+        }
+    }
 
     fun isFirstPage(): Boolean {
         return currentPage == 1

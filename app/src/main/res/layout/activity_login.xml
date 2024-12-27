@@ -2,41 +2,81 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="@dimen/dimen_20"
     android:orientation="vertical">
 
     <ImageView
-        android:layout_width="@dimen/dimen_150"
-        android:layout_height="@dimen/dimen_150"
-        android:src="@mipmap/ic_launcher"
+        android:layout_width="@dimen/dimen_100"
+        android:layout_height="@dimen/dimen_100"
+        android:layout_gravity="center"
         android:layout_marginTop="@dimen/dimen_20"
-        android:layout_gravity="center"/>
+        android:src="@drawable/syntactics_brand" />
 
-    <EditText
-        android:id="@+id/emailEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/login_email_hint"
-        android:inputType="textEmailAddress"
-        android:fontFamily="@font/fira_sans_regular"
-        android:layout_marginTop="@dimen/dimen_50"/>
 
-    <EditText
-        android:id="@+id/passwordEditText"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textEmailInputLayout"
         android:layout_width="match_parent"
+
+        android:layout_marginTop="@dimen/dimen_20"
+        app:boxStrokeColor="@color/color_primary"
         android:layout_height="wrap_content"
-        android:hint="@string/login_password_hint"
-        android:inputType="textPassword"
-        android:fontFamily="@font/fira_sans_regular"
-        android:layout_marginTop="@dimen/dimen_20"/>
+        android:hint="Email">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/emailEditText"
+            android:text="p@p.com"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textPasswordInputLayout"
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/dimen_10"
+        app:boxStrokeColor="@color/color_primary"
+        android:layout_height="wrap_content"
+        android:hint="Password">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/passwordEditText"
+            android:text="pass1234"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginLeft="@dimen/dimen_10"
+        android:layout_marginRight="@dimen/dimen_10"
+        android:layout_marginBottom="@dimen/dimen_20"
+        android:layout_weight="1"
+        android:gravity="bottom">
 
     <Button
         android:id="@+id/loginButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dimen_30"
+        android:background="@drawable/rounded_button"
         android:fontFamily="@font/fira_sans_bold"
         android:text="@string/login_txt"/>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:id="@+id/signUpTextView"
+        android:layout_below="@+id/loginButton"
+        android:layout_height="wrap_content"
+        android:text="@string/sign_up"
+        android:textAlignment="center"
+        android:textSize="@dimen/font_14"
+        android:layout_marginTop="@dimen/dimen_10"
+        android:fontFamily="@font/fira_sans_bold"
+        android:textColor="@color/color_primary"/>
+    </RelativeLayout>
 
 </LinearLayout>

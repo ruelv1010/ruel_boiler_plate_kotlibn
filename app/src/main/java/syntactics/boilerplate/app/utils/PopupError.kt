@@ -3,10 +3,11 @@ package syntactics.boilerplate.app.utils
 import android.app.Activity
 import android.content.Context
 import androidx.fragment.app.FragmentManager
-import com.android.app.R
-import com.android.app.security.AuthEncryptedDataManager
-import com.android.app.ui.sample.activity.LoginActivity
-import com.android.app.utils.dialog.CommonsErrorDialog
+import syntactics.android.app.R
+
+import syntactics.boilerplate.app.security.AuthEncryptedDataManager
+import syntactics.boilerplate.app.ui.sample.activity.LoginActivity
+import syntactics.boilerplate.app.utils.dialog.CommonsErrorDialog
 
 fun showPopupError(
     context: Context,

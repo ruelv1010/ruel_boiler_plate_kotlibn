@@ -1,10 +1,10 @@
 package syntactics.boilerplate.app.data.repositories.auth
 
-import com.android.app.data.repositories.auth.request.LoginRequest
-import com.android.app.data.repositories.auth.response.LoginResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST
+import syntactics.boilerplate.app.data.repositories.auth.request.LoginRequest
+import syntactics.boilerplate.app.data.repositories.auth.response.LoginResponse
 
 interface AuthService {
     @POST("api/auth/login.json")

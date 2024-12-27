@@ -2,10 +2,12 @@ package syntactics.boilerplate.app.utils
 
 import android.content.Context
 import android.widget.ImageView
-import com.android.app.R
+
+
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
+import syntactics.android.app.R
 
 
 // TODO Replace placeholder and error 'R.color.color_primary' to the app's default image resource
