@@ -55,7 +55,7 @@ class ArticleRepository @Inject constructor(
 
     fun doCreateArticle(type: String, title: String, description: String, imageFile: File): Flow<MyImageResponse> {
         return flow {
-            val response = articleRemoteDataSource.doCreateArticle(type, title,description, imageFile)
+            val response = articleRemoteDataSource.doCreateArticle(type, title,description,"", imageFile)
             emit(response)
         }.flowOn(ioDispatcher)
     }
