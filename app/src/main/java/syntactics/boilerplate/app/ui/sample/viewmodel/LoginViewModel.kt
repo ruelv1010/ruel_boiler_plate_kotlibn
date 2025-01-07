@@ -1,13 +1,16 @@
 package syntactics.boilerplate.app.ui.sample.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import retrofit2.HttpException
 import syntactics.boilerplate.app.data.model.ErrorModel
 import syntactics.boilerplate.app.data.repositories.auth.AuthRepository
@@ -43,6 +46,27 @@ class LoginViewModel @Inject constructor(
                         LoginViewState.Success(it.msg.orEmpty())
                     )
                 }
+        }
+    }
+
+
+
+    fun checkAuthProvider(email: String) {
+        viewModelScope.launch {
+            try {
+                verifyEmailAuthEnabled(email)
+            } catch (e: Exception) {
+                Log.e("Auth", "Error", e)
+            }
+        }
+    }
+    suspend fun verifyEmailAuthEnabled(email: String) {
+        val auth = FirebaseAuth.getInstance()
+        try {
+            val providers = auth.fetchSignInMethodsForEmail(email).await()
+            Log.d("Auth", "Available providers: $providers")
+        } catch (e: Exception) {
+            Log.e("Auth", "Error checking providers", e)
         }
     }
 

@@ -2,6 +2,7 @@ package syntactics.boilerplate.app.data.repositories.article
 
 
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.Headers
@@ -18,15 +19,19 @@ import syntactics.boilerplate.app.data.repositories.article.response.MyImageResp
 interface ArticleService {
 
     @Multipart
-    @POST("https://api.imgur.com/3/image")
+    @POST("image")
     @Headers(
-        "User-Agent: curl/7.84.0",
+     //   "User-Agent: curl/7.84.0",
         "Authorization: Client-ID a85319fa1f17f5c"  // Fixed: Authorization as a header
     )
     suspend fun doCreateArticle(
         @Part image: MultipartBody.Part,
-        @Part type: MultipartBody.Part,
+        @Part("type") type: RequestBody,
     ): Response<MyImageResponse>
+
+
+
+
 
     @POST("api/article/show.json")
     suspend fun getArticleDetails(@Body articleDetailsRequest: ArticleDetailsRequest): Response<ArticleResponse>

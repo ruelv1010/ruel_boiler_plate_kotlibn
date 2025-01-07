@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +14,13 @@ import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.google.firebase.auth.AuthCredential
+import com.google.firebase.auth.EmailAuthProvider
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthEmailException
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 
@@ -104,9 +112,11 @@ class ProfileFragment : Fragment() {
                     first_name = binding.firstNameEditText.text.toString(),
                     last_name = binding.lastNameEditText.text.toString(),
                     email = binding.emailEditText.text.toString(),
+                    password = encryptedDataManager.getMyPassword(),
                     imgurl = myImage.toString(),
                 )
                 profileViewModel.updateTodoByEmail(user_id, updatedTodo)
+
 
             }
         }
@@ -123,6 +133,7 @@ class ProfileFragment : Fragment() {
         if (requestCode == IMAGE_PICK_CODE && resultCode == Activity.RESULT_OK) {
             imageUri = data?.data
              binding.profileImage.loadImage(imageUri.toString(), requireActivity())
+            hideLoadingDialog()
 
             getFileFromUri(requireActivity(), imageUri)?.let {
                 viewModel.doCreateArticle(
@@ -149,14 +160,14 @@ class ProfileFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             profileViewModel.viewState.collect { state ->
                 when (state) {
+
+                    is ProfileViewState.Loading ->  showLoadingDialog(R.string.loading)
                     is ProfileViewState.Initial -> {
-                    }
+                        hideLoadingDialog()                    }
 
 
 
                     is ProfileViewState.Success -> {
-                        Toast.makeText(requireActivity(), "Success", Toast.LENGTH_SHORT)
-                            .show()
                         profileViewModel.getDetailsByEmail(encryptedDataManager.getMYID())
                         hideLoadingDialog()
 
@@ -164,21 +175,21 @@ class ProfileFragment : Fragment() {
 
                     is ProfileViewState.Error -> {
                         Toast.makeText(requireActivity(), state.message, Toast.LENGTH_LONG).show()
-
+                        hideLoadingDialog()
                     }
 
                     is ProfileViewState.SuccessDelete -> {
                         Toast.makeText(requireActivity(), state.msg, Toast.LENGTH_LONG).show()
-
+                        hideLoadingDialog()
                     }
 
                     is ProfileViewState.SuccessProfile -> {
-
                         binding.emailEditText.setText(state.todos.get(0).email)
                         binding.firstNameEditText.setText(state.todos.get(0).first_name)
                         binding.lastNameEditText.setText(state.todos.get(0).last_name)
                             binding.profileImage.loadImage(state.todos.get(0).imgurl, requireActivity())
                         myImage=state.todos.get(0).imgurl
+                        hideLoadingDialog()
                     }
                     else ->Unit
 
@@ -191,14 +202,13 @@ class ProfileFragment : Fragment() {
 
     private fun handleViewState(viewState: CreateArticleViewState) {
         when (viewState) {
-            is CreateArticleViewState.Loading -> {}
+            is CreateArticleViewState.Loading ->  showLoadingDialog(R.string.loading)
             is CreateArticleViewState.Success -> {
-                  hideLoadingDialog()
-                Toast.makeText(requireActivity(), viewState.myImageData.link, Toast.LENGTH_SHORT)
-                    .show()
 
+
+                binding.profileImage.loadImage(viewState.myImageData.link, requireActivity())
                 myImage = viewState.myImageData.link
-
+                hideLoadingDialog()
 
             }
 
@@ -222,26 +232,21 @@ class ProfileFragment : Fragment() {
     }
 
     private fun handleInputError(errorsData: ErrorsData) {
-        //  if (errorsData.name?.get(0)?.isNotEmpty() == true) binding.titleEditText.error = errorsData.name?.get(0)
-        //if (errorsData.desc?.get(0)?.isNotEmpty() == true) binding.descEditText.error = errorsData.desc?.get(0)
+
         if (errorsData.image?.get(0)?.isNotEmpty() == true)
             Toast.makeText(requireActivity(), errorsData.image?.get(0), Toast.LENGTH_SHORT).show()
     }
 
 
     private fun showLoadingDialog(@StringRes strId: Int) {
-        if (loadingDialog == null) {
-            loadingDialog = CommonDialog.getLoadingDialogInstance(
-                message = getString(strId)
-            )
-        }
-        loadingDialog?.show(childFragmentManager)
+        (requireActivity() as MainActivity ).showLoadingDialog(strId)
     }
 
     private fun hideLoadingDialog() {
-        loadingDialog?.dismiss()
-        loadingDialog = null
+        (requireActivity() as MainActivity ).hideLoadingDialog()
     }
+
+
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -249,6 +254,9 @@ class ProfileFragment : Fragment() {
     }
 
     companion object {
-        private const val LOADING_DIALOG_TAG = "LoadingDialog"
+
     }
+
+
+
 }

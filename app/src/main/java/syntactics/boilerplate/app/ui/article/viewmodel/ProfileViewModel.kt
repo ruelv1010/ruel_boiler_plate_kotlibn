@@ -100,7 +100,9 @@ class ProfileViewModel @Inject constructor(
                     }
 
                     // Refresh todos after update
+
                     fetchTodos()
+
                 } else {
                     _viewState.value = ProfileViewState.Error("No record found with email: $user_id")
                 }
@@ -146,6 +148,60 @@ class ProfileViewModel @Inject constructor(
                         } else {
                             // Handle the case when no records exist for the query
                             _viewState.value = ProfileViewState.Error("No user found with this email")
+                        }
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        // Handle error while fetching data
+                        _viewState.value = ProfileViewState.Error(error.message)
+                    }
+                })
+            } catch (e: Exception) {
+                // Catch any unexpected errors
+                _viewState.value = ProfileViewState.Error(e.localizedMessage ?: "Unknown error")
+            }
+        }
+    }
+
+    fun getDetailsByEmailAndPassword(email: String, password: String) {
+        viewModelScope.launch {
+            try {
+                // Set loading state
+                _viewState.value = ProfileViewState.Loading
+
+                // Query the database for users with the specified email and password
+                val query = todosRef
+                    .orderByChild("email") // Assuming the field storing email is named "email"
+                    .equalTo(email)
+
+                query.addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        if (snapshot.exists()) {
+                            // List to hold the user(s)
+                            val userList = mutableListOf<MyUsersModel>()
+
+                            // Loop through matching records
+                            for (childSnapshot in snapshot.children) {
+                                val user = childSnapshot.getValue(MyUsersModel::class.java)
+                                user?.let {
+                                    // Check if the password matches
+                                    if (it.password == password) {
+                                        // Add user to the list
+                                        userList.add(it)
+                                    }
+                                }
+                            }
+
+                            // If we find any user(s) with matching email and password, update the state with the first match
+                            if (userList.isNotEmpty()) {
+                                _viewState.value = ProfileViewState.SuccessProfile(userList)
+                            } else {
+                                // If no user is found with the matching email and password
+                                _viewState.value = ProfileViewState.Error("No user found with this email and password")
+                            }
+                        } else {
+                            // Handle the case when no records exist for the query
+                            _viewState.value = ProfileViewState.Error("Invalid email or password")
                         }
                     }
 

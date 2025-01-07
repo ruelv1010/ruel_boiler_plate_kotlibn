@@ -1,5 +1,8 @@
 package syntactics.boilerplate.app.data.repositories.auth
 
+import android.util.Log
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.tasks.await
 import retrofit2.HttpException
 import syntactics.boilerplate.app.data.repositories.auth.request.LoginRequest
 import syntactics.boilerplate.app.data.repositories.auth.response.LoginResponse
@@ -33,6 +36,15 @@ class AuthRemoteDataSource @Inject constructor(private val authService: AuthServ
         //Will automatically throw a NullPointerException when response.body() is Null
 
         return response.body() ?: throw NullPointerException("Response data is empty")
+    }
+    suspend fun verifyEmailAuthEnabled() {
+        val auth = FirebaseAuth.getInstance()
+        try {
+            val providers = auth.fetchSignInMethodsForEmail("test@test.com").await()
+            Log.d("Auth", "Available providers: $providers")
+        } catch (e: Exception) {
+            Log.e("Auth", "Error checking providers", e)
+        }
     }
 
 }

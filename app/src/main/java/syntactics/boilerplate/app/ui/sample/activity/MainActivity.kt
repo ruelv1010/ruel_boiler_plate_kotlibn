@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -21,11 +22,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import syntactics.android.app.R
 import syntactics.android.app.databinding.ActivityMainBinding
+import syntactics.boilerplate.app.utils.dialog.CommonDialog
 import syntactics.boilerplate.app.utils.setOnSingleClickListener
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-
+    private var loadingDialog: CommonDialog? = null
     private lateinit var binding: ActivityMainBinding
     private lateinit var navView: BottomNavigationView
     private lateinit var navController: NavController
@@ -87,16 +89,17 @@ class MainActivity : AppCompatActivity() {
             R.id.navigation_article,
             "Explore List of Todo",
             "Tap here to navigate to your to-do list.",
-            -1
+            R.id.navigation_profile
         )
     }
+
     fun tutorialProfile() {
         highlightMenuItem(
             navView,
             R.id.navigation_profile,
             "Explore Profile",
             "Tap here to navigate to your Profile.",
-            -1
+            -2
         )
     }
 
@@ -118,7 +121,7 @@ class MainActivity : AppCompatActivity() {
                 targetCircleColor(android.R.color.white)
                 titleTextSize(20)
                 descriptionTextSize(14)
-                cancelable(true)
+                cancelable(false)
             }
 
 
@@ -132,7 +135,7 @@ class MainActivity : AppCompatActivity() {
                         hideTutorial()
 
 
-                        if (nextMenuItemId != -1) {
+                        if (nextMenuItemId != -2) {
 
                             when (nextMenuItemId) {
                                 R.id.navigation_create -> tutorialCreate()
@@ -179,5 +182,20 @@ class MainActivity : AppCompatActivity() {
         fun getIntent(context: Context): Intent {
             return Intent(context, MainActivity::class.java)
         }
+    }
+
+
+    fun showLoadingDialog(@StringRes strId: Int) {
+        if (loadingDialog == null) {
+            loadingDialog = CommonDialog.getLoadingDialogInstance(
+                message = getString(strId)
+            )
+        }
+        loadingDialog?.show(supportFragmentManager)
+    }
+
+    fun hideLoadingDialog() {
+        loadingDialog?.dismiss()
+        loadingDialog = null
     }
 }

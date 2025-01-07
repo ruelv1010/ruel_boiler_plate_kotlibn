@@ -6,12 +6,13 @@
     android:padding="@dimen/dimen_20"
     android:orientation="vertical">
 
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:layout_width="@dimen/dimen_100"
         android:layout_height="@dimen/dimen_100"
         android:layout_gravity="center"
         android:id="@+id/profileImage"
         android:layout_marginTop="@dimen/dimen_20"
+        android:background="@drawable/circular_shape"
         android:src="@drawable/syntactics_brand" />
 
     <com.google.android.material.textfield.TextInputLayout
@@ -52,7 +53,6 @@
         android:layout_width="match_parent"
 
         android:layout_marginTop="@dimen/dimen_10"
-       android:enabled="false"
         app:boxStrokeColor="@color/color_primary"
         android:layout_height="wrap_content"
         android:hint="Email">

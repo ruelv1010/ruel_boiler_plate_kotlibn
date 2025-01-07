@@ -61,16 +61,16 @@ android {
             isDefault true
            // applicationIdSuffix ".dev"
             manifestPlaceholders = [appName: 'Dev - ' + rootProject.name]
-            buildConfigField "String", "BASE_URL", "\"https://androidtest.ziademo.com/\""
+            buildConfigField "String", "BASE_URL", "\"https://api.imgur.com/3/\""
         }
         alpha {
             applicationIdSuffix ".alpha"
             manifestPlaceholders = [appName: 'Alpha - ' + rootProject.name]
-            buildConfigField "String", "BASE_URL", "\"https://androidtest.ziademo.com/\""
+            buildConfigField "String", "BASE_URL", "\"https://api.imgur.com/3/\""
         }
         prod {
             manifestPlaceholders = [appName: rootProject.name + '-v' + versionName]
-            buildConfigField "String", "BASE_URL", "\"https://androidtest.ziademo.com/\""
+            buildConfigField "String", "BASE_URL", "\"https://api.imgur.com/3/\""
         }
     }
 

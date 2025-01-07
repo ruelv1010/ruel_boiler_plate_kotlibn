@@ -55,8 +55,8 @@ abstract class BaseRepository constructor(
         retrofit = Retrofit.Builder()
                 .baseUrl(url)
                 .addConverterFactory(MoshiConverterFactory.create())
-               .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-               .client(createOkHttpClient())
+            //   .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+             //  .client(createOkHttpClient())
                 .build()
     }
 

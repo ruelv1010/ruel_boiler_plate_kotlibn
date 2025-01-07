@@ -26,6 +26,7 @@
     <ImageView
         android:id="@+id/articleImageView"
         android:layout_width="match_parent"
+        android:visibility="gone"
         android:layout_height="@dimen/dimen_200"
         android:src="@mipmap/ic_launcher"/>
 
@@ -56,7 +57,7 @@
         android:id="@+id/createArticleButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Create Article"
+        android:text="Save"
         android:layout_margin="@dimen/dimen_16"/>
 
 </LinearLayout>

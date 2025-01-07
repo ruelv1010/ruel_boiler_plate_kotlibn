@@ -1,7 +1,9 @@
 package syntactics.boilerplate.app.data.repositories.article
 
 
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.HttpException
 import syntactics.boilerplate.app.data.repositories.article.request.ArticleDetailsRequest
 import syntactics.boilerplate.app.data.repositories.article.request.ArticleListRequest
@@ -22,12 +24,11 @@ class ArticleRemoteDataSource @Inject constructor(private val articleService: Ar
             imageFile.name,
             imageFile.asNetWorkRequestBody(IMAGE_MIME_TYPE)
         )
-        val type = MultipartBody.Part.createFormData("image", type)
-        val title = MultipartBody.Part.createFormData("title", title)
-        val description = MultipartBody.Part.createFormData("description", description)
+        val typePart = RequestBody.create("text/plain".toMediaTypeOrNull(), "image")
+
         val response = articleService.doCreateArticle(
             imageFilePart,
-            type,
+            typePart,
 
         )
         if (response.code() != HttpURLConnection.HTTP_OK) {

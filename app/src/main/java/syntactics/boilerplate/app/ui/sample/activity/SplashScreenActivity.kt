@@ -29,7 +29,9 @@ class SplashScreenActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
         observeRefreshToken()
-       viewModel.doRefreshToken()
+        val intent = LoginActivity.getIntent(this)
+        startActivity(intent)
+        this.finish()
     }
 
     private fun observeRefreshToken() {

@@ -32,6 +32,7 @@ import syntactics.boilerplate.app.ui.sample.activity.MainActivity
 import syntactics.boilerplate.app.ui.sample.viewmodel.LoginViewModel
 import syntactics.boilerplate.app.ui.sample.viewmodel.LoginViewState
 import syntactics.boilerplate.app.utils.FirebaseHelper
+import syntactics.boilerplate.app.utils.dialog.CommonDialog
 import syntactics.boilerplate.app.utils.loadImage
 import syntactics.boilerplate.app.utils.setOnSingleClickListener
 import syntactics.boilerplate.app.utils.showPopupError
@@ -42,7 +43,7 @@ class CreateFragment: Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: CreateArticleViewModel by viewModels()
-    private var loadingDialog: syntactics.boilerplate.app.utils.dialog.CommonDialog? = null
+    private var loadingDialog: CommonDialog? = null
 
     private lateinit var db: FirebaseFirestore
     private lateinit var storageRef: FirebaseStorage
@@ -168,7 +169,7 @@ class CreateFragment: Fragment() {
 
     private fun showLoadingDialog(@StringRes strId: Int) {
         if (loadingDialog == null) {
-            loadingDialog = syntactics.boilerplate.app.utils.dialog.CommonDialog.getLoadingDialogInstance(
+            loadingDialog = CommonDialog.getLoadingDialogInstance(
                 message = getString(strId)
             )
         }
