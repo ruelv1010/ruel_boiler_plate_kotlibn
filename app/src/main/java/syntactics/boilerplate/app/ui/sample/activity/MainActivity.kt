@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(view)
         setupNavigationComponent()
         setClickListener()
-        executeTutorials()
+
 
     }
 

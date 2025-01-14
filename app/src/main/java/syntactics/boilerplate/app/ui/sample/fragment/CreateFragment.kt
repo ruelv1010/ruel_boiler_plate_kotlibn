@@ -13,6 +13,8 @@ import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.getkeepsafe.taptargetview.TapTarget
+import com.getkeepsafe.taptargetview.TapTargetView
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 
@@ -38,7 +40,7 @@ import syntactics.boilerplate.app.utils.setOnSingleClickListener
 import syntactics.boilerplate.app.utils.showPopupError
 
 @AndroidEntryPoint
-class CreateFragment: Fragment() {
+class CreateFragment : Fragment() {
     private var _binding: FragmentCreateBinding? = null
     private val binding get() = _binding!!
 
@@ -69,6 +71,10 @@ class CreateFragment: Fragment() {
         setClickListeners()
 
         encryptedDataManager = AuthEncryptedDataManager()
+        if(encryptedDataManager.getIsNew().equals("true")){
+            setupFirstTutorialatitle()
+        }
+
     }
 
 
@@ -80,13 +86,18 @@ class CreateFragment: Fragment() {
             val title = titleEditText.text.toString()
             val description = descEditText.text.toString()
 
-            if (title.isEmpty() || description.isEmpty()) {
-                Toast.makeText(requireActivity(), "Title and Description cannot be empty", Toast.LENGTH_SHORT).show()
-            } else {
+            if (title.isEmpty()) {
+                titleEditText.error="Title  cannot be empty"
+            }
+            if (description.isEmpty()) {
+                descEditText.error="Description  cannot be empty"
+            }
+            if  (title != "" && description != ""){
                 uploadTodo(title, description)
             }
         }
     }
+
     private fun pickImageFromGallery() {
         val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"
@@ -98,7 +109,7 @@ class CreateFragment: Fragment() {
         if (requestCode == IMAGE_PICK_CODE && resultCode == Activity.RESULT_OK) {
             imageUri = data?.data
             Toast.makeText(requireActivity(), "Image selected", Toast.LENGTH_SHORT).show()
-            binding.articleImageView.loadImage(imageUri.toString(),requireActivity())
+            binding.articleImageView.loadImage(imageUri.toString(), requireActivity())
         }
     }
 
@@ -106,65 +117,79 @@ class CreateFragment: Fragment() {
     private fun uploadTodo(title: String, description: String) {
         if (imageUri != null) {
             firebaseHelper.uploadImage(imageUri!!, { imageUrl ->
-
-                //   val todo = TodoModel(title = title, description = description, imageUrl = imageUrl)
-                //  saveTodoToFirebase(todo)
             }, { error ->
-                Toast.makeText(requireActivity(), "Image upload failed: ${error.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireActivity(),
+                    "Image upload failed: ${error.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
             })
         } else {
-            val todo = TodoModel(title = title, description = description, user_id = encryptedDataManager.getMYID())
+            val todo = TodoModel(
+                title = title,
+                description = description,
+                user_id = encryptedDataManager.getMYID()
+            )
             saveTodoToFirebase(todo)
         }
     }
 
-    // Function to save the TodoModel to Firebase Database
+
     private fun saveTodoToFirebase(todo: TodoModel) {
         firebaseHelper.addTodoItem(todo, {
             Toast.makeText(requireActivity(), "Todo added successfully", Toast.LENGTH_SHORT).show()
         }, { error ->
-            Toast.makeText(requireActivity(), "Failed to add Todo: ${error.message}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                requireActivity(),
+                "Failed to add Todo: ${error.message}",
+                Toast.LENGTH_SHORT
+            ).show()
         })
     }
 
 
-    private fun observeArticle(){
+    private fun observeArticle() {
         lifecycleScope.launch {
-            viewModel.articleSharedFlow.collect{
+            viewModel.articleSharedFlow.collect {
                 handleViewState(it)
             }
         }
     }
 
 
-
-    private fun handleViewState(viewState: CreateArticleViewState){
-        when(viewState){
+    private fun handleViewState(viewState: CreateArticleViewState) {
+        when (viewState) {
             is CreateArticleViewState.Loading -> showLoadingDialog(R.string.create_article_loading)
             is CreateArticleViewState.Success -> {
                 hideLoadingDialog()
                 Toast.makeText(requireActivity(), viewState.message, Toast.LENGTH_SHORT).show()
             }
+
             is CreateArticleViewState.PopupError -> {
                 hideLoadingDialog()
-                showPopupError(requireActivity(), childFragmentManager, viewState.errorCode, viewState.message)
+                showPopupError(
+                    requireActivity(),
+                    childFragmentManager,
+                    viewState.errorCode,
+                    viewState.message
+                )
             }
+
             is CreateArticleViewState.InputError -> {
                 hideLoadingDialog()
-                handleInputError(viewState.errorData?: ErrorsData())
+                handleInputError(viewState.errorData ?: ErrorsData())
             }
         }
     }
 
-    private fun handleInputError(errorsData: ErrorsData){
-        if (errorsData.name?.get(0)?.isNotEmpty() == true) binding.titleEditText.error = errorsData.name?.get(0)
-        if (errorsData.desc?.get(0)?.isNotEmpty() == true) binding.descEditText.error = errorsData.desc?.get(0)
+    private fun handleInputError(errorsData: ErrorsData) {
+        if (errorsData.name?.get(0)?.isNotEmpty() == true) binding.titleEditText.error =
+            errorsData.name?.get(0)
+        if (errorsData.desc?.get(0)?.isNotEmpty() == true) binding.descEditText.error =
+            errorsData.desc?.get(0)
         if (errorsData.image?.get(0)?.isNotEmpty() == true)
             Toast.makeText(requireActivity(), errorsData.image?.get(0), Toast.LENGTH_SHORT).show()
     }
-
-
-
 
 
     private fun showLoadingDialog(@StringRes strId: Int) {
@@ -185,4 +210,117 @@ class CreateFragment: Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
+
+    private fun setupFirstTutorialatitle() = binding.run {
+        TapTargetView.showFor(
+            requireActivity(),
+            TapTarget.forView(
+                titleEditText,
+                "Title",
+                "Add your title here"
+            )
+                .outerCircleColor(R.color.purple_500)
+                .outerCircleAlpha(0.96f)
+                .targetCircleColor(R.color.white)
+                .titleTextSize(20)
+                .titleTextColor(R.color.white)
+                .descriptionTextSize(16)
+                .descriptionTextColor(R.color.white)
+                .textColor(R.color.white)
+                .dimColor(R.color.black)
+                .drawShadow(true)
+                .cancelable(true)
+                .tintTarget(true)
+                .transparentTarget(true)
+                .targetRadius(35),
+            object : TapTargetView.Listener() {
+                override fun onTargetClick(view: TapTargetView) {
+                    super.onTargetClick(view)
+                    setupFirstTutorialadesc()
+                }
+
+                override fun onTargetCancel(view: TapTargetView) {
+                    super.onTargetCancel(view)
+                    setupFirstTutorialadesc()
+                }
+            }
+        )
+
+    }
+
+    private fun setupFirstTutorialadesc() = binding.run {
+        TapTargetView.showFor(
+            requireActivity(),
+            TapTarget.forView(
+                descEditText,
+                "Description",
+                "Add your description here"
+            )
+                .outerCircleColor(R.color.purple_500)
+                .outerCircleAlpha(0.96f)
+                .targetCircleColor(R.color.white)
+                .titleTextSize(20)
+                .titleTextColor(R.color.white)
+                .descriptionTextSize(16)
+                .descriptionTextColor(R.color.white)
+                .textColor(R.color.white)
+                .dimColor(R.color.black)
+                .drawShadow(true)
+                .cancelable(true)
+                .tintTarget(true)
+                .transparentTarget(true)
+                .targetRadius(35),
+            object : TapTargetView.Listener() {
+                override fun onTargetClick(view: TapTargetView) {
+                    super.onTargetClick(view)
+                    setupFirstTutorialAdd()
+                }
+
+                override fun onTargetCancel(view: TapTargetView) {
+                    super.onTargetCancel(view)
+                    setupFirstTutorialAdd()
+                }
+            }
+        )
+
+    }
+
+    private fun setupFirstTutorialAdd() = binding.run {
+        TapTargetView.showFor(
+            requireActivity(),
+            TapTarget.forView(
+                createArticleButton,
+                "This is Save button",
+                "Click here to perform an action to Save"
+            )
+                .outerCircleColor(R.color.purple_500)
+                .outerCircleAlpha(0.96f)
+                .targetCircleColor(R.color.white)
+                .titleTextSize(20)
+                .titleTextColor(R.color.white)
+                .descriptionTextSize(16)
+                .descriptionTextColor(R.color.white)
+                .textColor(R.color.white)
+                .dimColor(R.color.black)
+                .drawShadow(true)
+                .cancelable(true)
+                .tintTarget(true)
+                .transparentTarget(true)
+                .targetRadius(35),
+            object : TapTargetView.Listener() {
+                override fun onTargetClick(view: TapTargetView) {
+                    super.onTargetClick(view)
+
+                }
+
+                override fun onTargetCancel(view: TapTargetView) {
+                    super.onTargetCancel(view)
+                }
+            }
+        )
+
+    }
 }
+
+

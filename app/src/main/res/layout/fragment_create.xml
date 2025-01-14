@@ -28,6 +28,7 @@
         android:id="@+id/articleImageView"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dimen_200"
+        android:visibility="gone"
         android:src="@mipmap/ic_launcher"/>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -63,13 +64,22 @@
             android:layout_margin="@dimen/dimen_16"
             android:inputType="text" />
     </com.google.android.material.textfield.TextInputLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginLeft="@dimen/dimen_10"
+        android:layout_marginRight="@dimen/dimen_10"
+        android:layout_marginBottom="@dimen/dimen_20"
+        android:layout_weight="1"
+        android:gravity="bottom">
 
     <Button
         android:id="@+id/createArticleButton"
         android:background="@drawable/rounded_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Create Article"
+        android:text="Save Todo"
         android:layout_margin="@dimen/dimen_16"/>
+    </RelativeLayout>
 
 </LinearLayout>

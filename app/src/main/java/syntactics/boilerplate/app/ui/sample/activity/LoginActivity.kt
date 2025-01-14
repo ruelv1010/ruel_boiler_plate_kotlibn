@@ -25,6 +25,7 @@ import syntactics.boilerplate.app.ui.article.viewmodel.ProfileViewModel
 import syntactics.boilerplate.app.ui.article.viewmodel.ProfileViewState
 import syntactics.boilerplate.app.ui.sample.viewmodel.LoginViewModel
 import syntactics.boilerplate.app.ui.sample.viewmodel.LoginViewState
+import syntactics.boilerplate.app.utils.dialog.CommonDialog
 import syntactics.boilerplate.app.utils.loadImage
 import syntactics.boilerplate.app.utils.setOnSingleClickListener
 import syntactics.boilerplate.app.utils.showPopupError
@@ -33,7 +34,7 @@ import syntactics.boilerplate.app.utils.showPopupError
 class LoginActivity : AppCompatActivity() {
     private lateinit var encryptedDataManager: AuthEncryptedDataManager
     private lateinit var binding: ActivityLoginBinding
-    private var loadingDialog: syntactics.boilerplate.app.utils.dialog.CommonDialog? = null
+    private var loadingDialog: CommonDialog? = null
     private val viewModel: LoginViewModel by viewModels()
     private lateinit var auth: FirebaseAuth
     private val profileViewModel: ProfileViewModel by viewModels()
@@ -48,7 +49,7 @@ class LoginActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         FirebaseApp.initializeApp(this);
         encryptedDataManager = AuthEncryptedDataManager()
-        setupTutorialSignup()
+       // setupTutorialSignup()
     }
 
     private fun setupFirstTutorialLogin() = binding.run {
@@ -166,49 +167,6 @@ class LoginActivity : AppCompatActivity() {
             }
     }
 
-//    private fun observeViewModel() {
-//
-//        lifecycleScope.launch {
-//            profileViewModel.viewState.collect { state ->
-//                when (state) {
-//
-//                    is ProfileViewState.Loading -> showLoadingDialog(R.string.loading)
-//                    is ProfileViewState.Initial -> {
-//                        hideLoadingDialog()
-//                    }
-//
-//
-//                    is ProfileViewState.Success -> {
-//                        profileViewModel.getDetailsByEmailAndPassword(
-//                            binding.emailEditText.text.toString(),
-//                            binding.passwordEditText.text.toString()
-//                        )
-//
-//                        hideLoadingDialog()
-//
-//                    }
-//
-//
-//                    is ProfileViewState.SuccessProfile -> {
-//                        encryptedDataManager.setEmail(binding.emailEditText.text.toString())
-//                        encryptedDataManager.setPassword(binding.passwordEditText.text.toString())
-//                        Toast.makeText(
-//                            this@LoginActivity,
-//                            "Welcome back: ${binding.emailEditText.text.toString()}",
-//                            Toast.LENGTH_SHORT
-//                        ).show()
-//                        val intent = MainActivity.getIntent(this@LoginActivity)
-//                        startActivity(intent)
-//                        hideLoadingDialog()
-//                    }
-//
-//                    else -> Unit
-//
-//
-//                }
-//            }
-//        }
-//    }
 
     private fun observeViewModel() {
 
@@ -216,14 +174,13 @@ class LoginActivity : AppCompatActivity() {
             profileViewModel.viewState.collect { state ->
                 when (state) {
 
-                    is ProfileViewState.Loading ->  showLoadingDialog(R.string.loading)
+                    is ProfileViewState.Loading -> showLoadingDialog(R.string.loading)
                     is ProfileViewState.Initial -> {
-                        hideLoadingDialog()                    }
-
+                        hideLoadingDialog()
+                    }
 
 
                     is ProfileViewState.Success -> {
-                    //    profileViewModel.getDetailsByEmail(encryptedDataManager.getMYID())
 
 
                         hideLoadingDialog()
@@ -246,7 +203,7 @@ class LoginActivity : AppCompatActivity() {
                         encryptedDataManager.setPassword(binding.passwordEditText.text.toString())
                         Toast.makeText(
                             this@LoginActivity,
-                            "Welcome back: ${binding.emailEditText.text.toString()}",
+                            "Welcome : ${binding.emailEditText.text.toString()}",
                             Toast.LENGTH_SHORT
                         ).show()
                         val intent = MainActivity.getIntent(this@LoginActivity)
@@ -259,7 +216,8 @@ class LoginActivity : AppCompatActivity() {
 //                        myImage=state.todos.get(0).imgurl
                         hideLoadingDialog()
                     }
-                    else ->Unit
+
+                    else -> Unit
 
 
                 }

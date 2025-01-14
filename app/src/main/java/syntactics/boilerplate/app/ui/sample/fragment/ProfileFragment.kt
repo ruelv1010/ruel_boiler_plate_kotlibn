@@ -11,9 +11,12 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.getkeepsafe.taptargetview.TapTarget
+import com.getkeepsafe.taptargetview.TapTargetView
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
@@ -59,7 +62,7 @@ class ProfileFragment : Fragment() {
 
     private val viewModel: CreateArticleViewModel by viewModels()
     private var loadingDialog: CommonDialog? = null
-
+    private var resetTutorial: String? = null
     private lateinit var db: FirebaseFirestore
     private lateinit var storageRef: FirebaseStorage
     private lateinit var encryptedDataManager: AuthEncryptedDataManager
@@ -68,6 +71,11 @@ class ProfileFragment : Fragment() {
     private val activity by lazy { requireActivity() as MainActivity }
     private val profileViewModel: ProfileViewModel by viewModels()
     private var myImage: String? = null
+    private var firstName: String? = null
+    private var lastName: String? = null
+    private var myEmail: String? = null
+    private var myImg: String? = null
+    private var isNEw: String? = null
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -87,38 +95,72 @@ class ProfileFragment : Fragment() {
         observeArticle()
         encryptedDataManager = AuthEncryptedDataManager()
         observeViewModel()
+        if (encryptedDataManager.getIsNew().equals("true")) {
+            setupFirstTutorialProfile()
+        }
 
+        resetTutorial = "false"
     }
 
     override fun onResume() {
         super.onResume()
-          profileViewModel.getDetailsByEmail(encryptedDataManager.getMYID())
+        profileViewModel.getDetailsByEmail(encryptedDataManager.getMYID())
     }
 
     private fun setClickListeners() = binding.run {
+       
         profileImage.setOnSingleClickListener {
+            resetTutorial = "false"
             pickImageFromGallery()
         }
         saveButton.setOnSingleClickListener {
+            resetTutorial = "false"
             if (binding.firstNameEditText.text.toString()
-                    .equals("") || binding.lastNameEditText.text.toString()
                     .equals("")
             ) {
 
-            } else {
+                binding.firstNameEditText.error = "First name cannot be empty"
+
+            }
+            if (binding.lastNameEditText.text.toString()
+                    .equals("")
+            ) {
+
+                binding.lastNameEditText.error = "Last name cannot be empty"
+
+            }
+
+            if (binding.emailEditText.text.toString()
+                    .equals("")
+            ) {
+
+                binding.emailEditText.error = "Email cannot be empty"
+
+            }
+
+
+            if (binding.emailEditText.text.toString() != "" && binding.lastNameEditText.text.toString() != "" && binding.firstNameEditText.text.toString() != "") {
                 val user_id = encryptedDataManager.getMYID()
+
                 val updatedTodo = MyUsersModel(
                     user_id = encryptedDataManager.getMYID(),
                     first_name = binding.firstNameEditText.text.toString(),
                     last_name = binding.lastNameEditText.text.toString(),
                     email = binding.emailEditText.text.toString(),
                     password = encryptedDataManager.getMyPassword(),
-                    imgurl = myImage.toString(),
+                    imgurl = encryptedDataManager.getIMG(),
+                    isfirst = encryptedDataManager.getIsNew(),
                 )
                 profileViewModel.updateTodoByEmail(user_id, updatedTodo)
 
-
             }
+        }
+
+
+        resetTutorialButton.setOnSingleClickListener {
+
+                resetTutorial = "true"
+                showYesNoDialog()
         }
     }
 
@@ -132,7 +174,7 @@ class ProfileFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == IMAGE_PICK_CODE && resultCode == Activity.RESULT_OK) {
             imageUri = data?.data
-             binding.profileImage.loadImage(imageUri.toString(), requireActivity())
+            binding.profileImage.loadImage(imageUri.toString(), requireActivity())
             hideLoadingDialog()
 
             getFileFromUri(requireActivity(), imageUri)?.let {
@@ -143,8 +185,6 @@ class ProfileFragment : Fragment() {
             }
         }
     }
-
-
 
 
     private fun observeArticle() {
@@ -161,20 +201,25 @@ class ProfileFragment : Fragment() {
             profileViewModel.viewState.collect { state ->
                 when (state) {
 
-                    is ProfileViewState.Loading ->  showLoadingDialog(R.string.loading)
+                    is ProfileViewState.Loading -> showLoadingDialog(R.string.loading)
                     is ProfileViewState.Initial -> {
-                        hideLoadingDialog()                    }
-
-
+                        hideLoadingDialog()
+                    }
 
                     is ProfileViewState.Success -> {
+
                         profileViewModel.getDetailsByEmail(encryptedDataManager.getMYID())
+                        if (resetTutorial == "true") {
+                            val intent = MainActivity.getIntent(requireActivity())
+                            startActivity(intent)
+                        }
                         hideLoadingDialog()
 
                     }
 
                     is ProfileViewState.Error -> {
                         Toast.makeText(requireActivity(), state.message, Toast.LENGTH_LONG).show()
+
                         hideLoadingDialog()
                     }
 
@@ -184,14 +229,23 @@ class ProfileFragment : Fragment() {
                     }
 
                     is ProfileViewState.SuccessProfile -> {
+                        Toast.makeText(requireActivity(), "Success", Toast.LENGTH_LONG).show()
                         binding.emailEditText.setText(state.todos.get(0).email)
                         binding.firstNameEditText.setText(state.todos.get(0).first_name)
                         binding.lastNameEditText.setText(state.todos.get(0).last_name)
-                            binding.profileImage.loadImage(state.todos.get(0).imgurl, requireActivity())
-                        myImage=state.todos.get(0).imgurl
+                        binding.profileImage.loadImage(state.todos.get(0).imgurl, requireActivity())
+                        encryptedDataManager.setFirtName(state.todos.get(0).first_name.toString())
+                        encryptedDataManager.setLastName(state.todos.get(0).last_name.toString())
+                        encryptedDataManager.setIsNew(state.todos.get(0).isfirst.toString())
+                        isNEw=state.todos.get(0).isfirst.toString()
+
+
+                        myImg = state.todos.get(0).imgurl.toString()
+                        encryptedDataManager.setIMG(state.todos.get(0).imgurl.toString())
                         hideLoadingDialog()
                     }
-                    else ->Unit
+
+                    else -> Unit
 
 
                 }
@@ -202,12 +256,13 @@ class ProfileFragment : Fragment() {
 
     private fun handleViewState(viewState: CreateArticleViewState) {
         when (viewState) {
-            is CreateArticleViewState.Loading ->  showLoadingDialog(R.string.loading)
+            is CreateArticleViewState.Loading -> showLoadingDialog(R.string.loading)
             is CreateArticleViewState.Success -> {
 
 
                 binding.profileImage.loadImage(viewState.myImageData.link, requireActivity())
                 myImage = viewState.myImageData.link
+                encryptedDataManager.setIMG(viewState.myImageData.link.toString())
                 hideLoadingDialog()
 
             }
@@ -239,13 +294,203 @@ class ProfileFragment : Fragment() {
 
 
     private fun showLoadingDialog(@StringRes strId: Int) {
-        (requireActivity() as MainActivity ).showLoadingDialog(strId)
+        if (loadingDialog == null) {
+            loadingDialog = CommonDialog.getLoadingDialogInstance(
+                message = getString(strId)
+            )
+            loadingDialog?.show(childFragmentManager)
+        }
     }
 
     private fun hideLoadingDialog() {
-        (requireActivity() as MainActivity ).hideLoadingDialog()
+        loadingDialog?.dismiss()
+        loadingDialog = null
     }
 
+
+    private fun setupFirstTutorialProfile() = binding.run {
+        TapTargetView.showFor(
+            requireActivity(),
+            TapTarget.forView(
+                profileImage,
+                "Profile Image",
+                "Click select and change profile picture"
+            )
+                .outerCircleColor(R.color.purple_500)
+                .outerCircleAlpha(0.96f)
+                .targetCircleColor(R.color.white)
+                .titleTextSize(20)
+                .titleTextColor(R.color.white)
+                .descriptionTextSize(16)
+                .descriptionTextColor(R.color.white)
+                .textColor(R.color.white)
+                .dimColor(R.color.black)
+                .drawShadow(true)
+                .cancelable(true)
+                .tintTarget(true)
+                .transparentTarget(true)
+                .targetRadius(35),
+            object : TapTargetView.Listener() {
+                override fun onTargetClick(view: TapTargetView) {
+                    super.onTargetClick(view)
+                    setupFirstTutorialFirstName()
+                }
+
+                override fun onTargetCancel(view: TapTargetView) {
+                    super.onTargetCancel(view)
+                    setupFirstTutorialFirstName()
+                }
+            }
+        )
+
+    }
+
+    private fun setupFirstTutorialFirstName() = binding.run {
+        TapTargetView.showFor(
+            requireActivity(),
+            TapTarget.forView(
+                firstNameEditText,
+                "First Name",
+                "Enter your First Name"
+            )
+                .outerCircleColor(R.color.purple_500)
+                .outerCircleAlpha(0.96f)
+                .targetCircleColor(R.color.white)
+                .titleTextSize(20)
+                .titleTextColor(R.color.white)
+                .descriptionTextSize(16)
+                .descriptionTextColor(R.color.white)
+                .textColor(R.color.white)
+                .dimColor(R.color.black)
+                .drawShadow(true)
+                .cancelable(true)
+                .tintTarget(true)
+                .transparentTarget(true)
+                .targetRadius(35),
+            object : TapTargetView.Listener() {
+                override fun onTargetClick(view: TapTargetView) {
+                    super.onTargetClick(view)
+                    setupFirstTutorialLastName()
+                }
+
+                override fun onTargetCancel(view: TapTargetView) {
+                    super.onTargetCancel(view)
+                    setupFirstTutorialLastName()
+                }
+            }
+        )
+
+    }
+
+    private fun setupFirstTutorialLastName() = binding.run {
+        TapTargetView.showFor(
+            requireActivity(),
+            TapTarget.forView(
+                lastNameEditText,
+                "Last Name",
+                "Enter your Last Name"
+            )
+                .outerCircleColor(R.color.purple_500)
+                .outerCircleAlpha(0.96f)
+                .targetCircleColor(R.color.white)
+                .titleTextSize(20)
+                .titleTextColor(R.color.white)
+                .descriptionTextSize(16)
+                .descriptionTextColor(R.color.white)
+                .textColor(R.color.white)
+                .dimColor(R.color.black)
+                .drawShadow(true)
+                .cancelable(true)
+                .tintTarget(true)
+                .transparentTarget(true)
+                .targetRadius(35),
+            object : TapTargetView.Listener() {
+                override fun onTargetClick(view: TapTargetView) {
+                    super.onTargetClick(view)
+                    setupFirstTutorialEmail()
+                }
+
+                override fun onTargetCancel(view: TapTargetView) {
+                    super.onTargetCancel(view)
+                    setupFirstTutorialEmail()
+                }
+            }
+        )
+
+    }
+
+    private fun setupFirstTutorialEmail() = binding.run {
+        TapTargetView.showFor(
+            requireActivity(),
+            TapTarget.forView(
+                emailEditText,
+                "Email Address",
+                "Enter your Email Address"
+            )
+                .outerCircleColor(R.color.purple_500)
+                .outerCircleAlpha(0.96f)
+                .targetCircleColor(R.color.white)
+                .titleTextSize(20)
+                .titleTextColor(R.color.white)
+                .descriptionTextSize(16)
+                .descriptionTextColor(R.color.white)
+                .textColor(R.color.white)
+                .dimColor(R.color.black)
+                .drawShadow(true)
+                .cancelable(true)
+                .tintTarget(true)
+                .transparentTarget(true)
+                .targetRadius(35),
+            object : TapTargetView.Listener() {
+                override fun onTargetClick(view: TapTargetView) {
+                    super.onTargetClick(view)
+                    setupFirstTutorialSave()
+                }
+
+                override fun onTargetCancel(view: TapTargetView) {
+                    super.onTargetCancel(view)
+                    setupFirstTutorialSave()
+                }
+            }
+        )
+
+    }
+
+    private fun setupFirstTutorialSave() = binding.run {
+        TapTargetView.showFor(
+            requireActivity(),
+            TapTarget.forView(
+                saveButton,
+                "This is Save button",
+                "Click here to perform an action to Save"
+            )
+                .outerCircleColor(R.color.purple_500)
+                .outerCircleAlpha(0.96f)
+                .targetCircleColor(R.color.white)
+                .titleTextSize(20)
+                .titleTextColor(R.color.white)
+                .descriptionTextSize(16)
+                .descriptionTextColor(R.color.white)
+                .textColor(R.color.white)
+                .dimColor(R.color.black)
+                .drawShadow(true)
+                .cancelable(true)
+                .tintTarget(true)
+                .transparentTarget(true)
+                .targetRadius(35),
+            object : TapTargetView.Listener() {
+                override fun onTargetClick(view: TapTargetView) {
+                    super.onTargetClick(view)
+
+                }
+
+                override fun onTargetCancel(view: TapTargetView) {
+                    super.onTargetCancel(view)
+                }
+            }
+        )
+
+    }
 
 
     override fun onDestroyView() {
@@ -257,6 +502,46 @@ class ProfileFragment : Fragment() {
 
     }
 
+    private fun showYesNoDialog() {
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle("Tutorial")
+        builder.setMessage("Need assist?")
+        builder.setPositiveButton("No") { dialog, _ ->
 
+            encryptedDataManager.setIsNew("false")
+            val updatedTodo = MyUsersModel(
+                user_id = encryptedDataManager.getMYID(),
+                first_name = encryptedDataManager.getFirstName(),
+                last_name = encryptedDataManager.getLastName(),
+                email = encryptedDataManager.getMyEmail(),
+                password = encryptedDataManager.getMyPassword(),
+                imgurl = encryptedDataManager.getIMG(),
+                isfirst = "false"
+            )
+            profileViewModel.updateTodoByEmail(
+                encryptedDataManager.getMYID(),
+                updatedTodo
+            )
+            dialog.dismiss()
+            dialog.dismiss()
 
+        }
+        builder.setNegativeButton("Yes") { dialog, _ ->
+            val updatedTodo = MyUsersModel(
+                user_id = encryptedDataManager.getMYID(),
+                first_name = encryptedDataManager.getFirstName(),
+                last_name = encryptedDataManager.getLastName(),
+                email = encryptedDataManager.getMyEmail(),
+                password = encryptedDataManager.getMyPassword(),
+                imgurl = encryptedDataManager.getIMG(),
+                isfirst = "true"
+            )
+            profileViewModel.updateTodoByEmail(
+                encryptedDataManager.getMYID(),
+                updatedTodo
+            )
+            dialog.dismiss()
+        }
+        builder.create().show()
+    }
 }

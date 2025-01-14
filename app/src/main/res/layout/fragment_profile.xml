@@ -85,5 +85,18 @@
             android:fontFamily="@font/fira_sans_bold"
             android:text="Update" />
 
+        <TextView
+            android:id="@+id/resetTutorialButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:padding="@dimen/dimen_10"
+            android:textColor="@color/color_primary"
+            android:layout_below="@+id/saveButton"
+            android:layout_marginTop="@dimen/dimen_10"
+            android:background="@drawable/rounded_white_button"
+            android:fontFamily="@font/fira_sans_bold"
+            android:text="Replay Tutorial" />
+
     </RelativeLayout>
 </LinearLayout>

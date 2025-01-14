@@ -50,6 +50,30 @@ class AuthEncryptedDataManager {
         }
     }
 
+    fun setIsNew(isNew: String) {
+        sharedPreferences.edit(true) {
+            putString(ISNEW, isNew)
+        }
+    }
+    fun setIMG(img: String) {
+        sharedPreferences.edit(true) {
+            putString(IMG, img)
+        }
+    }
+
+    fun setFirtName(first_name: String) {
+        sharedPreferences.edit(true) {
+            putString(USER_FIRST_NAME, first_name)
+        }
+    }
+
+    fun setLastName(last_name: String) {
+        sharedPreferences.edit(true) {
+            putString(USER_LAST_NAME, last_name)
+        }
+    }
+
+
     fun setPassword(myPass: String) {
         sharedPreferences.edit(true) {
             putString(PASSWORD, myPass)
@@ -67,6 +91,10 @@ class AuthEncryptedDataManager {
     fun getAccessToken() = sharedPreferences.getString(ACCESS_TOKEN, "") ?: ""
     fun getMYID() = sharedPreferences.getString(MYID, "") ?: ""
     fun getMyEmail() = sharedPreferences.getString(EMAIL, "") ?: ""
+    fun getIsNew() = sharedPreferences.getString(ISNEW, "") ?: ""
+    fun getIMG() = sharedPreferences.getString(IMG, "") ?: ""
+    fun getFirstName() = sharedPreferences.getString(USER_FIRST_NAME, "") ?: ""
+    fun getLastName() = sharedPreferences.getString(USER_LAST_NAME, "") ?: ""
     fun getMyPassword() = sharedPreferences.getString(PASSWORD, "") ?: ""
     private var inMemoryUserData: UserData? = null
     private var inMemoryAvatarData: AvatarData? = null
@@ -200,7 +228,9 @@ class AuthEncryptedDataManager {
 
     companion object{
         private const val MYID = "MYID"
+        private const val ISNEW = "ISNEW"
         private const val EMAIL = "EMAIL"
+        private const val IMG = "IMG"
         private const val PASSWORD = "PASSWORD"
         private const val ACCESS_TOKEN = "ACCESS_TOKEN"
         private const val ENCRYPTED_PREFS_NAME = "ENCRYPTED_PREFS_NAME"

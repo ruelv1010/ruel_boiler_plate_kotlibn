@@ -23,6 +23,7 @@ import syntactics.boilerplate.app.ui.sample.viewmodel.LoginViewModel
 import syntactics.boilerplate.app.ui.sample.viewmodel.LoginViewState
 import syntactics.boilerplate.app.utils.FirebaseHelper
 import syntactics.boilerplate.app.utils.FirebaseUsersHelper
+import syntactics.boilerplate.app.utils.dialog.CommonDialog
 import syntactics.boilerplate.app.utils.setOnSingleClickListener
 import syntactics.boilerplate.app.utils.showPopupError
 
@@ -30,7 +31,7 @@ import syntactics.boilerplate.app.utils.showPopupError
 class RegisterActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityRegisterBinding
-    private var loadingDialog: syntactics.boilerplate.app.utils.dialog.CommonDialog? = null
+    private var loadingDialog: CommonDialog? = null
     private val viewModel: LoginViewModel by viewModels()
     private lateinit var auth: FirebaseAuth
     private val firebaseHelper = FirebaseUsersHelper()
@@ -46,21 +47,41 @@ class RegisterActivity : AppCompatActivity() {
 
     }
 
-    private fun setupClickListener() = binding.run{
+    private fun setupClickListener() = binding.run {
         loginButton.setOnSingleClickListener {
-             if (passwordEditText.text.toString() == "" || passwordConfirmEditText.text.toString() == ""|| emailEditText.text.toString() == "")
-        {
-            Toast.makeText(this@RegisterActivity, "Please complete all fields", Toast.LENGTH_SHORT).show()
+            if (passwordEditText.text.toString() == "" ){
+                passwordEditText.error="Password cannot be empty"
             }
-            else if (passwordEditText.text.toString()==passwordConfirmEditText.text.toString()){
-
-
-
-                signUp( emailEditText.text.toString(),
-                    passwordEditText.text.toString())
+            if (passwordConfirmEditText.text.toString() == "" ){
+                passwordConfirmEditText.error="Confirm Password cannot be empty"
             }
-            else{
-                Toast.makeText(this@RegisterActivity, "Password not match", Toast.LENGTH_SHORT).show()
+            if (emailEditText.text.toString() == "" ){
+                emailEditText.error="Email cannot be empty"
+            }
+            if (firstNameEditText.text.toString() == "" ){
+                firstNameEditText.error="First Name cannot be empty"
+            }
+            if (lastNameEditText.text.toString() == "" ){
+                lastNameEditText.error="Last Name cannot be empty"
+            }
+
+
+
+            else if (passwordEditText.text.toString() == passwordConfirmEditText.text.toString()&&
+                passwordEditText.text.toString() != ""&&
+                passwordConfirmEditText.text.toString() != ""&&
+                emailEditText.text.toString() != ""&&
+                firstNameEditText.text.toString() != ""&&
+                lastNameEditText.text.toString() != "") {
+
+
+                signUp(
+                    emailEditText.text.toString(),
+                    passwordEditText.text.toString()
+                )
+            } else {
+                Toast.makeText(this@RegisterActivity, "Password not match", Toast.LENGTH_SHORT)
+                    .show()
             }
 
         }
@@ -77,9 +98,10 @@ class RegisterActivity : AppCompatActivity() {
 
     private fun saveUsersFirebase(myUsersModel: MyUsersModel) {
         firebaseHelper.addTodoItem(myUsersModel, {
-            Toast.makeText(this, "Todo added successfully", Toast.LENGTH_SHORT).show()
+            val intent = LoginActivity.getIntent(this@RegisterActivity)
+            startActivity(intent)
         }, { error ->
-            Toast.makeText(this, "Failed to add Todo: ${error.message}", Toast.LENGTH_SHORT).show()
+
         })
     }
 
@@ -88,32 +110,36 @@ class RegisterActivity : AppCompatActivity() {
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     val user = auth.currentUser
-                    val myUsersModel = MyUsersModel(email =user?.email,
+                    val myUsersModel = MyUsersModel(
+                        email = user?.email,
                         first_name = binding.firstNameEditText.text.toString(),
                         imgurl = user?.email,
                         last_name = binding.lastNameEditText.text.toString(),
                         password = binding.passwordEditText.text.toString(),
                         user_id = user?.uid,
-                    isfirst = "true")
+                        isfirst = "true"
+                    )
                     saveUsersFirebase(myUsersModel)
-                    Toast.makeText(this, "Sign-up successful: ${user?.email}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Sign-up successful: ${user?.email}", Toast.LENGTH_SHORT)
+                        .show()
                 } else {
                     // Sign-up failed
-                    Toast.makeText(this, "Error: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Error: ${task.exception?.message}", Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
     }
 
-    private fun observeLogin(){
+    private fun observeLogin() {
         lifecycleScope.launch {
-            viewModel.loginSharedFlow.collect{
+            viewModel.loginSharedFlow.collect {
                 handleViewState(it)
             }
         }
     }
 
-    private fun handleViewState(viewState: LoginViewState){
-        when(viewState){
+    private fun handleViewState(viewState: LoginViewState) {
+        when (viewState) {
             is LoginViewState.Loading -> showLoadingDialog(R.string.login_loading)
             is LoginViewState.Success -> {
                 hideLoadingDialog()
@@ -121,28 +147,39 @@ class RegisterActivity : AppCompatActivity() {
                 startActivity(intent)
                 Toast.makeText(this, viewState.message, Toast.LENGTH_SHORT).show()
             }
+
             is LoginViewState.PopupError -> {
                 hideLoadingDialog()
-                showPopupError(this@RegisterActivity, supportFragmentManager, viewState.errorCode, viewState.message)
+                showPopupError(
+                    this@RegisterActivity,
+                    supportFragmentManager,
+                    viewState.errorCode,
+                    viewState.message
+                )
             }
+
             is LoginViewState.InputError -> {
                 hideLoadingDialog()
-                handleInputError(viewState.errorData?: ErrorsData())
+                handleInputError(viewState.errorData ?: ErrorsData())
             }
+
             else -> Unit
         }
     }
 
-    private fun handleInputError(errorsData: ErrorsData){
-        if (errorsData.email?.get(0)?.isNotEmpty() == true) binding.emailEditText.error = errorsData.email?.get(0)
-        if (errorsData.password?.get(0)?.isNotEmpty() == true) binding.passwordEditText.error = errorsData.password?.get(0)
+    private fun handleInputError(errorsData: ErrorsData) {
+        if (errorsData.email?.get(0)?.isNotEmpty() == true) binding.emailEditText.error =
+            errorsData.email?.get(0)
+        if (errorsData.password?.get(0)?.isNotEmpty() == true) binding.passwordEditText.error =
+            errorsData.password?.get(0)
     }
 
     private fun showLoadingDialog(@StringRes strId: Int) {
         if (loadingDialog == null) {
-            loadingDialog = syntactics.boilerplate.app.utils.dialog.CommonDialog.getLoadingDialogInstance(
-                message = getString(strId)
-            )
+            loadingDialog =
+                syntactics.boilerplate.app.utils.dialog.CommonDialog.getLoadingDialogInstance(
+                    message = getString(strId)
+                )
         }
         loadingDialog?.show(supportFragmentManager)
     }
@@ -156,7 +193,6 @@ class RegisterActivity : AppCompatActivity() {
         super.onDestroy()
         hideLoadingDialog()
     }
-
 
 
     companion object {

@@ -13,6 +13,8 @@ import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.getkeepsafe.taptargetview.TapTarget
+import com.getkeepsafe.taptargetview.TapTargetView
 
 
 import dagger.hilt.android.AndroidEntryPoint
@@ -79,14 +81,13 @@ class ArticleFragment : Fragment(), ArticleAdapter.ArticleCallback,
 
     }
 
+
     override fun onResume() {
         super.onResume()
         onRefresh()
     }
 
-
     private fun observeViewModel() {
-        // Collect ViewState
         viewLifecycleOwner.lifecycleScope.launch {
             todoViewModel.viewState.collect { state ->
                 when (state) {
@@ -149,7 +150,7 @@ class ArticleFragment : Fragment(), ArticleAdapter.ArticleCallback,
         val updateDialog =
             UpdateDialog.newInstance(object : UpdateDialog.ProfileSaveDialogCallBack {
                 override fun onMyAccountClicked(dialog: UpdateDialog) {
-                todoViewModel.deleteTodo(data.id.toString())
+                    todoViewModel.deleteTodo(data.id.toString())
                 }
 
                 override fun onSuccess(dialog: UpdateDialog, title: String, desc: String) {
@@ -157,12 +158,13 @@ class ArticleFragment : Fragment(), ArticleAdapter.ArticleCallback,
                         todo = TodoModel(
                             id = data.id,
                             title = title,
-                            description = desc
+                            description = desc,
+                            user_id = encryptedDataManager.getMYID()
                         )
                     )
                 }
 
-            }, title =data.title.toString(), desc =data.description.toString())
+            }, title = data.title.toString(), desc = data.description.toString())
 
         updateDialog.show(childFragmentManager, UpdateDialog.TAG)
     }
