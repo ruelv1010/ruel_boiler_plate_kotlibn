@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navView: BottomNavigationView
     private lateinit var navController: NavController
     private var isActive: String? = null
-    var currentTutorialStep = 0 // To track which step the tutorial is on
+    var currentTutorialStep = 0
     var currentTapTargetView: TapTargetView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {

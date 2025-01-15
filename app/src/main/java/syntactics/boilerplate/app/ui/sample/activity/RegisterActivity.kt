@@ -123,7 +123,7 @@ class RegisterActivity : AppCompatActivity() {
                     Toast.makeText(this, "Sign-up successful: ${user?.email}", Toast.LENGTH_SHORT)
                         .show()
                 } else {
-                    // Sign-up failed
+
                     Toast.makeText(this, "Error: ${task.exception?.message}", Toast.LENGTH_SHORT)
                         .show()
                 }

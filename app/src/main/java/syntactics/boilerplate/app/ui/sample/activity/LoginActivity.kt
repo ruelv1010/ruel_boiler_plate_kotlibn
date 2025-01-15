@@ -54,7 +54,7 @@ class LoginActivity : AppCompatActivity() {
 
     private fun setupFirstTutorialLogin() = binding.run {
         TapTargetView.showFor(
-            this@LoginActivity,  // The current activity
+            this@LoginActivity,
             TapTarget.forView(
                 loginButton,
                 "This is login button",
@@ -209,11 +209,6 @@ class LoginActivity : AppCompatActivity() {
                         val intent = MainActivity.getIntent(this@LoginActivity)
                         startActivity(intent)
 
-//                        binding.emailEditText.setText(state.todos.get(0).email)
-//                        binding.firstNameEditText.setText(state.todos.get(0).first_name)
-//                        binding.lastNameEditText.setText(state.todos.get(0).last_name)
-//                        binding.profileImage.loadImage(state.todos.get(0).imgurl, requireActivity())
-//                        myImage=state.todos.get(0).imgurl
                         hideLoadingDialog()
                     }
 

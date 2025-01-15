@@ -71,7 +71,7 @@ class CreateFragment : Fragment() {
         setClickListeners()
 
         encryptedDataManager = AuthEncryptedDataManager()
-        if(encryptedDataManager.getIsNew().equals("true")){
+        if (encryptedDataManager.getIsNew().equals("true")) {
             setupFirstTutorialatitle()
         }
 
@@ -87,12 +87,12 @@ class CreateFragment : Fragment() {
             val description = descEditText.text.toString()
 
             if (title.isEmpty()) {
-                titleEditText.error="Title  cannot be empty"
+                titleEditText.error = "Title  cannot be empty"
             }
             if (description.isEmpty()) {
-                descEditText.error="Description  cannot be empty"
+                descEditText.error = "Description  cannot be empty"
             }
-            if  (title != "" && description != ""){
+            if (title != "" && description != "") {
                 uploadTodo(title, description)
             }
         }

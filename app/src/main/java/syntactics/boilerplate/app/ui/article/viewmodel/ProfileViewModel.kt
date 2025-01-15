@@ -25,26 +25,26 @@ class ProfileViewModel @Inject constructor(
     private val _viewState = MutableStateFlow<ProfileViewState>(ProfileViewState.Initial)
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> = _error
-    // Expose as immutable state flow
+
     val viewState: StateFlow<ProfileViewState> = _viewState.asStateFlow()
 
-    // Firebase Database reference
+
     private val database = FirebaseDatabase.getInstance()
     private val todosRef = database.getReference("Users")
 
-    // Initialize ViewModel and fetch todos
+
     init {
         fetchTodos()
     }
 
-    // Fetch todos using coroutines
+
     fun fetchTodos() {
         viewModelScope.launch {
             try {
-                // Set loading state
+
                 _viewState.value = ProfileViewState.Loading
 
-                // Fetch todos
+
                 val todoList = mutableListOf<MyUsersModel>()
 
                 todosRef.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -57,17 +57,16 @@ class ProfileViewModel @Inject constructor(
                             }
                         }
 
-                        // Update state with todos
                         _viewState.value = ProfileViewState.Success(todoList)
                     }
 
                     override fun onCancelled(error: DatabaseError) {
-                        // Handle error
+
                         _viewState.value = ProfileViewState.Error(error.message)
                     }
                 })
             } catch (e: Exception) {
-                // Catch any unexpected errors
+
                 _viewState.value = ProfileViewState.Error(e.localizedMessage ?: "Unknown error")
             }
         }
@@ -76,7 +75,7 @@ class ProfileViewModel @Inject constructor(
     fun deleteTodo(todoId: String) {
         todosRef.child(todoId).removeValue()
             .addOnSuccessListener {
-                // Optional: Handle successful deletion
+
                 _viewState.value = ProfileViewState.SuccessDelete("Deleted")
                 fetchTodos()
             }
@@ -87,19 +86,19 @@ class ProfileViewModel @Inject constructor(
     fun updateTodoByEmail(user_id: String, updatedTodo: MyUsersModel) {
         viewModelScope.launch {
             try {
-                // Set loading state
+
                 _viewState.value = ProfileViewState.Loading
 
-                // Query the database for the matching email
+
                 val snapshot = todosRef.orderByChild("user_id").equalTo(user_id).get().await()
 
                 if (snapshot.exists()) {
-                    // Loop through matching records and update them
+
                     for (childSnapshot in snapshot.children) {
                         childSnapshot.ref.setValue(updatedTodo).await()
                     }
 
-                    // Refresh todos after update
+
 
                     fetchTodos()
 
@@ -117,47 +116,47 @@ class ProfileViewModel @Inject constructor(
     fun getDetailsByEmail(user_id: String) {
         viewModelScope.launch {
             try {
-                // Set loading state
+
                 _viewState.value = ProfileViewState.Loading
 
-                // Query the database for users with the specified email
+
                 val query = todosRef.orderByChild("user_id").equalTo(user_id)
 
                 query.addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         if (snapshot.exists()) {
-                            // List to hold the user(s)
+
                             val userList = mutableListOf<MyUsersModel>()
 
-                            // Loop through matching records
+
                             for (childSnapshot in snapshot.children) {
                                 val user = childSnapshot.getValue(MyUsersModel::class.java)
                                 user?.let {
-                                    // Add user to the list (you can assume there's only one user matching the email)
+
                                     userList.add(it)
                                 }
                             }
 
-                            // If we find any user(s), update the state with the first match
+
                             if (userList.isNotEmpty()) {
                                 _viewState.value = ProfileViewState.SuccessProfile(userList)
                             } else {
-                                // If no user is found with the given email
+
                                 _viewState.value = ProfileViewState.Error("No user found with this email")
                             }
                         } else {
-                            // Handle the case when no records exist for the query
+
                             _viewState.value = ProfileViewState.Error("No user found with this email")
                         }
                     }
 
                     override fun onCancelled(error: DatabaseError) {
-                        // Handle error while fetching data
+
                         _viewState.value = ProfileViewState.Error(error.message)
                     }
                 })
             } catch (e: Exception) {
-                // Catch any unexpected errors
+
                 _viewState.value = ProfileViewState.Error(e.localizedMessage ?: "Unknown error")
             }
         }
@@ -166,10 +165,10 @@ class ProfileViewModel @Inject constructor(
     fun getDetailsByEmailAndPassword(email: String, password: String) {
         viewModelScope.launch {
             try {
-                // Set loading state
+
                 _viewState.value = ProfileViewState.Loading
 
-                // Query the database for users with the specified email and password
+
                 val query = todosRef
                     .orderByChild("email") // Assuming the field storing email is named "email"
                     .equalTo(email)
@@ -177,16 +176,16 @@ class ProfileViewModel @Inject constructor(
                 query.addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         if (snapshot.exists()) {
-                            // List to hold the user(s)
+
                             val userList = mutableListOf<MyUsersModel>()
 
-                            // Loop through matching records
+
                             for (childSnapshot in snapshot.children) {
                                 val user = childSnapshot.getValue(MyUsersModel::class.java)
                                 user?.let {
-                                    // Check if the password matches
+
                                     if (it.password == password) {
-                                        // Add user to the list
+
                                         userList.add(it)
                                     }
                                 }
@@ -196,22 +195,22 @@ class ProfileViewModel @Inject constructor(
                             if (userList.isNotEmpty()) {
                                 _viewState.value = ProfileViewState.SuccessProfile(userList)
                             } else {
-                                // If no user is found with the matching email and password
+
                                 _viewState.value = ProfileViewState.Error("No user found with this email and password")
                             }
                         } else {
-                            // Handle the case when no records exist for the query
+
                             _viewState.value = ProfileViewState.Error("Invalid email or password")
                         }
                     }
 
                     override fun onCancelled(error: DatabaseError) {
-                        // Handle error while fetching data
+
                         _viewState.value = ProfileViewState.Error(error.message)
                     }
                 })
             } catch (e: Exception) {
-                // Catch any unexpected errors
+
                 _viewState.value = ProfileViewState.Error(e.localizedMessage ?: "Unknown error")
             }
         }

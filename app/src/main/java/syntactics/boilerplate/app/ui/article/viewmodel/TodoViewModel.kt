@@ -35,27 +35,27 @@ class TodoViewModel @Inject constructor(
     private val _viewState = MutableStateFlow<TodoViewState>(TodoViewState.Initial)
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> = _error
-    // Expose as immutable state flow
+
     val viewState: StateFlow<TodoViewState> = _viewState.asStateFlow()
 
-    // Firebase Database reference
+
     private val database = FirebaseDatabase.getInstance()
     private val todosRef = database.getReference("Todo")
 
 
-    // Initialize ViewModel and fetch todos
+
     init {
         fetchTodos(encryptedDataManager.getMYID())
     }
 
-    // Fetch todos using coroutines
+
     fun fetchTodos(userId: String) {
         viewModelScope.launch {
             try {
-                // Set loading state
+
                 _viewState.value = TodoViewState.Loading
 
-                // Fetch todos
+
                 val todoList = mutableListOf<TodoModel>()
 
                 todosRef.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -64,23 +64,23 @@ class TodoViewModel @Inject constructor(
                             val todo = childSnapshot.getValue(TodoModel::class.java)
                             todo?.let {
                                 val todoWithId = it.copy(id = childSnapshot.key ?: "")
-                                if (todoWithId.user_id == userId) { // Filter by userId
+                                if (todoWithId.user_id == userId) {
                                     todoList.add(todoWithId)
                                 }
                             }
                         }
 
-                        // Update state with filtered todos
+
                         _viewState.value = TodoViewState.Success(todoList)
                     }
 
                     override fun onCancelled(error: DatabaseError) {
-                        // Handle error
+
                         _viewState.value = TodoViewState.Error(error.message)
                     }
                 })
             } catch (e: Exception) {
-                // Catch any unexpected errors
+
                 _viewState.value = TodoViewState.Error(e.localizedMessage ?: "Unknown error")
             }
         }
@@ -90,7 +90,7 @@ class TodoViewModel @Inject constructor(
     fun deleteTodo(todoId: String) {
         todosRef.child(todoId).removeValue()
             .addOnSuccessListener {
-                // Optional: Handle successful deletion
+
                 _viewState.value = TodoViewState.SuccessDelete("Deleted")
                 fetchTodos(encryptedDataManager.getMYID())
             }
@@ -101,13 +101,13 @@ class TodoViewModel @Inject constructor(
     fun updateTodo(todo: TodoModel) {
         viewModelScope.launch {
             try {
-                // Set loading state
+
                 _viewState.value = TodoViewState.Loading
 
-                // Update in Firebase
+
                 todosRef.child(todo.id.toString()).setValue(todo).await()
 
-                // Refresh todos after update
+
                 fetchTodos(encryptedDataManager.getMYID())
             } catch (e: Exception) {
                 _viewState.value = TodoViewState.Error(

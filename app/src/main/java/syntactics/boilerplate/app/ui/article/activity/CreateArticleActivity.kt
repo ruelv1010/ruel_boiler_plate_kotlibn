@@ -92,8 +92,6 @@ class CreateArticleActivity : AppCompatActivity() {
         if (imageUri != null) {
             firebaseHelper.uploadImage(imageUri!!, { imageUrl ->
 
-             //   val todo = TodoModel(title = title, description = description, imageUrl = imageUrl)
-              //  saveTodoToFirebase(todo)
             }, { error ->
                 Toast.makeText(this, "Image upload failed: ${error.message}", Toast.LENGTH_SHORT).show()
             })
@@ -103,7 +101,7 @@ class CreateArticleActivity : AppCompatActivity() {
         }
     }
 
-    // Function to save the TodoModel to Firebase Database
+
     private fun saveTodoToFirebase(todo: TodoModel) {
         firebaseHelper.addTodoItem(todo, {
             Toast.makeText(this, "Todo added successfully", Toast.LENGTH_SHORT).show()
